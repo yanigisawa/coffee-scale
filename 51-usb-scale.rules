@@ -1,0 +1,1 @@
+SUBSYSTEM=="usb", ATTR{idVendor}=="0922", ATTR{idProduct}=="8003", MODE="0776" SYMLINK="dymo_scale"
