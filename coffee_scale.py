@@ -29,6 +29,7 @@ def getWeightInGrams(dev="/dev/usb/hiddev0"):
         hiddev_event_fmt = "IIII"
         usb_binary_read = struct.unpack(hiddev_event_fmt, os.read(fd, struct.calcsize(hiddev_event_fmt)))
         grams = usb_binary_read[3]
+        os.close(fd)
     except OSError as e:
         print("{0} - Failed to read from USB device".format(datetime.utcnow()))
     return grams
