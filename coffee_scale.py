@@ -4,7 +4,6 @@ import fcntl
 import struct
 from datetime import datetime, timedelta
 from time import sleep, strftime
-import daemon
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import glob
@@ -21,15 +20,18 @@ def getWeightInGrams(dev="/dev/usb/hiddev0"):
     appears on /dev/usb/hiddev0
     """
     # If we cannot find the USB device, return -1
-    if not os.path.isfile(dev):
-        return -1
 
-    fd = os.open(dev, os.O_RDONLY)
+    grams = -1
+    try:
+        fd = os.open(dev, os.O_RDONLY)
 
-    # Read 4 unsigned integers from USB device
-    hiddev_event_fmt = "IIII"
-    usb_binary_read = struct.unpack(hiddev_event_fmt, os.read(fd, struct.calcsize(hiddev_event_fmt)))
-    return usb_binary_read[3]
+        # Read 4 unsigned integers from USB device
+        hiddev_event_fmt = "IIII"
+        usb_binary_read = struct.unpack(hiddev_event_fmt, os.read(fd, struct.calcsize(hiddev_event_fmt)))
+        grams = usb_binary_read[3]
+    except OSError as e:
+        print("{0} - Failed to read from USB device".format(datetime.utcnow()))
+    return grams
 
 def moveLogsToArchive(tempFilePath, archiveDir):
     """
@@ -75,7 +77,6 @@ if __name__ == "__main__":
             when="m", interval=args.logRotateTimeMinutes, utc=True)
 
     logger.addHandler(handler)
-    with daemon.DaemonContext():
-        main(args)
+    main(args)
 
 
