@@ -50,12 +50,14 @@ def main(args):
 
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
     rotateTime = datetime.utcnow() + rotateMinutes
+    currentWeight = getWeightInGrams()
 
     while True:
         if datetime.utcnow() > rotateTime:
             moveLogsToArchive(args.tempFile, args.permanentDirectory)
             rotateTime = datetime.utcnow() + rotateMinutes
-        logger.info("{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), getWeightInGrams()))
+        if getWeightInGrams() != currentWeight:
+            logger.info("{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), getWeightInGrams()))
         sleep(1)
 
 def getParser():
