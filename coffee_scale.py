@@ -60,7 +60,7 @@ def moveLogsToArchive(tempFilePath, archiveDir):
         shutil.move(fileName, os.path.join(archiveDir, os.path.basename(fileName)))
 
 def shouldLogWeight(newReading):
-    return newReading > _weightChangedThreshold
+    return abs(_currentWeight - newReading) > _weightChangedThreshold
 
 def potIsLifted():
     return _currentWeight <= _emptyPotThreshold
@@ -78,6 +78,7 @@ def logToInitialState():
 def main(args):
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
     rotateTime = datetime.utcnow() + rotateMinutes
+    global _currentWeight 
     _currentWeight = getWeightInGrams()
 
     while True:

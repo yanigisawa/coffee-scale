@@ -17,15 +17,15 @@ class CoffeeTest(unittest.TestCase):
         self.assertEquals(args.logRotateTimeMinutes, 1)
 
     def test_whenValueChangesLessThanThreshold_LogIsNotWritten(self):
-        cs._currentWeight = 1
+        cs._currentWeight = 20
         cs._threshold = 5
-        shouldLogItem = cs.shouldLogWeight(5)
+        shouldLogItem = cs.shouldLogWeight(21)
         self.assertEquals(False, shouldLogItem)
 
     def test_whenValueChangesGreaterThanThreshold_LogIsWritten(self):
         cs._currentWeight = 1
         cs._threshold = 5
-        shouldLogItem = cs.shouldLogWeight(6)
+        shouldLogItem = cs.shouldLogWeight(7)
         self.assertEquals(True, shouldLogItem)
 
     def test_whenValueIsAtLowThreshold_PotHasBeenLifted(self):
