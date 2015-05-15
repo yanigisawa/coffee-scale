@@ -8,9 +8,21 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
+from ISStreamer.Streamer import Streamer
 
 logger = logging.getLogger("coffee_log")
 logger.setLevel(logging.INFO)
+
+_currentWeight = 0
+_weightChangedThreshold = 5
+_emptyPotThreshold = 10
+_initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
+if not _initialStateKey:
+    print("### Initial State Key not set in environment variable")
+
+_environment = os.environ.get("ENVIRONMENT")
+if not _environment:
+    _environment = "prod"
 
 def getWeightInGrams(dev="/dev/usb/hiddev0"):
     """
@@ -46,21 +58,40 @@ def moveLogsToArchive(tempFilePath, archiveDir):
 
     for fileName in logFiles:
         shutil.move(fileName, os.path.join(archiveDir, os.path.basename(fileName)))
+
+def shouldLogWeight(newReading):
+    return newReading > _weightChangedThreshold
+
+def potIsLifted():
+    return _currentWeight <= _emptyPotThreshold
+
+def logToInitialState():
+    utcnow = datetime.utcnow()
+    bucketKey = "{0}_{1}_{2}".format(utcnow.year, str(utcnow.month).zfill(2), _environment)
+
+    streamer = Streamer(bucket_name="{0} - Coffee Data".format(_environment), 
+            bucket_key=bucketKey, access_key=_initialStateKey)
+    if potIsLifted():
+        streamer.log("Coffee Pot Lifted", "true")
+    streamer.log("Coffee Weight", _currentWeight)
         
 def main(args):
-
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
     rotateTime = datetime.utcnow() + rotateMinutes
-    currentWeight = getWeightInGrams()
+    _currentWeight = getWeightInGrams()
 
     while True:
         tmpWeight = getWeightInGrams()
         if datetime.utcnow() > rotateTime:
             moveLogsToArchive(args.tempFile, args.permanentDirectory)
             rotateTime = datetime.utcnow() + rotateMinutes
-        if tmpWeight != currentWeight:
+
+        if shouldLogWeight(tmpWeight):
             logger.info("{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
-            currentWeight = tmpWeight
+            _currentWeight = tmpWeight
+            logToInitialState()
+
+
         sleep(1)
 
 def getParser():
