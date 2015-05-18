@@ -26,10 +26,8 @@ if not _environment:
 
 def getWeightInGrams(dev="/dev/usb/hiddev0"):
     """
-    The default param passed in assumes that the accompanying file 51-usb-scale.rules
-    rule file has been added to /etc/udev/rules.d to automatically map this specific
-    scale to the /dev/dymo_scale device handle. Otherwise, this device normally 
-    appears on /dev/usb/hiddev0
+    This device normally appears on /dev/usb/hiddev0, assume
+    device still appears on this file handle.
     """
     # If we cannot find the USB device, return -1
 
@@ -94,7 +92,6 @@ def main(args):
             _currentWeight = tmpWeight
             logToInitialState()
 
-
         sleep(1)
 
 def getParser():
@@ -117,5 +114,4 @@ if __name__ == "__main__":
 
     logger.addHandler(handler)
     main(args)
-
 
