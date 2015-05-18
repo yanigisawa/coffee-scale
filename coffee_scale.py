@@ -67,13 +67,13 @@ def potIsLifted():
 
 def logToInitialState():
     utcnow = datetime.utcnow()
-    bucketKey = "coffee_scale_data" #.format(utcnow.year, str(utcnow.month).zfill(2), _environment)
+    bucketKey = "{0} - coffee_scale_data".format(_environment)
 
     streamer = Streamer(bucket_name="{0} - Coffee Scale Data".format(_environment), 
             bucket_key=bucketKey, access_key=_initialStateKey)
 
     if potIsLifted():
-        streamer.log("Coffee Pot Lifted", "true")
+        streamer.log("Coffee Pot Lifted", True)
     streamer.log("Coffee Weight", _currentWeight)
     streamer.close()
         
