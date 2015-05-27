@@ -95,7 +95,6 @@ def writeToHipChat():
     parameters['color'] = 'random'
 
     hipster.method('rooms/message', method='POST', parameters=parameters)
-    pass
         
 def main(args):
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
