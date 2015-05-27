@@ -9,6 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
 from ISStreamer.Streamer import Streamer
+import hipchat
 
 logger = logging.getLogger("coffee_log")
 logger.setLevel(logging.INFO)
@@ -23,6 +24,10 @@ if not _initialStateKey:
 _environment = os.environ.get("ENVIRONMENT")
 if not _environment:
     _environment = "prod"
+
+_hipchatKey = os.environ.get('HIPCHAT_KEY')
+if not _hipchatKey:
+    print('### Hipchat API Key missing from environment variable HIPCHAT_KEY')
 
 def getWeightInGrams(dev="/dev/usb/hiddev0"):
     """
@@ -74,6 +79,23 @@ def logToInitialState():
         streamer.log("Coffee Pot Lifted", True)
     streamer.log("Coffee Weight", _currentWeight)
     streamer.close()
+
+def writeToHipChat():
+    hipster = hipchat.HipChat(token=_hipchatKey)
+
+    parameters = {}
+    # Fridge Room
+    parameters['room_id'] = 926556
+    parameters['from'] = 'Coffee Scale'
+    message = ""
+    if potIsLifted():
+        message = "Coffee Pot Lifted "
+    message += "Current Weight: {0}".format(_currentWeight)
+    parameters['message'] = message
+    parameters['color'] = 'random'
+
+    hipster.method('rooms/message', method='POST', parameters=parameters)
+    pass
         
 def main(args):
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
@@ -91,6 +113,7 @@ def main(args):
             logger.info("{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
             _currentWeight = tmpWeight
             logToInitialState()
+            writeToHipChat()
 
         sleep(1)
 
