@@ -10,6 +10,7 @@ import glob
 import shutil
 from ISStreamer.Streamer import Streamer
 import hipchat
+import math
 
 logger = logging.getLogger("coffee_log")
 logger.setLevel(logging.INFO)
@@ -17,6 +18,11 @@ logger.setLevel(logging.INFO)
 _currentWeight = 0
 _weightChangedThreshold = 5
 _emptyPotThreshold = 10
+_loopCount = 0
+_logToHipChatLoopCount = 40
+_mugAmounts = [1200, 1466, 1732, 1998, 2264, 2530]
+_mugFluidCapacity = 266
+
 _initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
 if not _initialStateKey:
     print("### Initial State Key not set in environment variable")
@@ -68,6 +74,9 @@ def shouldLogWeight(newReading):
 def potIsLifted():
     return _currentWeight <= _emptyPotThreshold
 
+def shouldPostToHipChat():
+    return _loopCount == _logToHipChatLoopCount
+
 def logToInitialState():
     utcnow = datetime.utcnow()
     bucketKey = "{0} - coffee_scale_data".format(_environment)
@@ -80,29 +89,41 @@ def logToInitialState():
     streamer.log("Coffee Weight", _currentWeight)
     streamer.close()
 
-def writeToHipChat():
-    hipster = hipchat.HipChat(token=_hipchatKey)
-
+def getHipchatParameters():
     parameters = {}
     # Fridge Room
     parameters['room_id'] = 926556
-    parameters['from'] = 'Coffee Scale'
-    message = ""
-    if potIsLifted():
-        message = "Coffee Pot Lifted "
-    message += "Current Weight: {0}".format(_currentWeight)
-    parameters['message'] = message
+    totalAvailableMugs = len(_mugAmounts)
+    parameters['from'] = "{0} / {1}".format(getAvailableMugs(), totalAvailableMugs)
+    parameters['message'] = "{0} / {1}".format(_currentWeight, _mugAmounts[totalAvailableMugs - 1]) 
     parameters['color'] = 'random'
 
-    hipster.method('rooms/message', method='POST', parameters=parameters)
+    return parameters
+
+def writeToHipChat():
+    hipster = hipchat.HipChat(token=_hipchatKey)
+    params = getHipchatParameters()
+    hipster.method('rooms/message', method='POST', parameters=params)
+
+def getAvailableMugs():
+    availableMugs = 0
+    for mugAmount in _mugAmounts:
+        minimumWeightForMug = math.floor(mugAmount - (_mugFluidCapacity * .1)) - 10
+        if _currentWeight <= minimumWeightForMug:
+            break
+        availableMugs += 1
+
+    return availableMugs
         
 def main(args):
     rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
     rotateTime = datetime.utcnow() + rotateMinutes
     global _currentWeight 
+    global _loopCount
     _currentWeight = getWeightInGrams()
 
     while True:
+        _loopCount += 1
         tmpWeight = getWeightInGrams()
         if datetime.utcnow() > rotateTime:
             moveLogsToArchive(args.tempFile, args.permanentDirectory)
@@ -112,6 +133,9 @@ def main(args):
             logger.info("{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
             _currentWeight = tmpWeight
             logToInitialState()
+
+        if shouldPostToHipChat():
+            _loopCount = 0
             writeToHipChat()
 
         sleep(1)
