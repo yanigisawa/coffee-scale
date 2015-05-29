@@ -25,6 +25,14 @@ _logToHipChatLoopCount = 40
 _mugAmounts = [1200, 1466, 1732, 1998, 2264, 2530]
 _mugFluidCapacity = 266
 
+if __name__ == "__main__":
+    parser = getParser()
+    args = parser.parse_args()
+    handler = TimedRotatingFileHandler(args.tempFile,
+            when="m", interval=args.logRotateTimeMinutes, utc=True)
+
+    logger.addHandler(handler)
+
 _initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
 if not _initialStateKey:
     logger.error("### Initial State Key not set in environment variable")
@@ -183,11 +191,5 @@ def getParser():
     return parser
 
 if __name__ == "__main__":
-    parser = getParser()
-    args = parser.parse_args()
-    handler = TimedRotatingFileHandler(args.tempFile,
-            when="m", interval=args.logRotateTimeMinutes, utc=True)
-
-    logger.addHandler(handler)
     main(args)
 
