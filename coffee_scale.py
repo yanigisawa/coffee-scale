@@ -25,6 +25,18 @@ _logToHipChatLoopCount = 40
 _mugAmounts = [1200, 1466, 1732, 1998, 2264, 2530]
 _mugFluidCapacity = 266
 
+def getParser():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('tempFile', help='Temporary output location file to write', 
+            default='/var/tmp/coffee_scale')
+    parser.add_argument('permanentDirectory', help='Permanent storage location for scale data')
+    parser.add_argument('logRotateTimeMinutes', 
+            help='Number of minutes to capture data in the temp-file before writing to the permanent directory',
+            type=int)
+
+    return parser
+
 if __name__ == "__main__":
     parser = getParser()
     args = parser.parse_args()
@@ -178,17 +190,6 @@ def main(args):
 
         sleep(1)
 
-def getParser():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('tempFile', help='Temporary output location file to write', 
-            default='/var/tmp/coffee_scale')
-    parser.add_argument('permanentDirectory', help='Permanent storage location for scale data')
-    parser.add_argument('logRotateTimeMinutes', 
-            help='Number of minutes to capture data in the temp-file before writing to the permanent directory',
-            type=int)
-
-    return parser
 
 if __name__ == "__main__":
     main(args)
