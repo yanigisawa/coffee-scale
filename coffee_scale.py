@@ -11,6 +11,8 @@ import shutil
 from ISStreamer.Streamer import Streamer
 import hipchat
 import math
+import requests
+import json
 
 logger = logging.getLogger("coffee_log")
 logger.setLevel(logging.INFO)
@@ -25,7 +27,7 @@ _mugFluidCapacity = 266
 
 _initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
 if not _initialStateKey:
-    print("### Initial State Key not set in environment variable")
+    logger.error("### Initial State Key not set in environment variable")
 
 _environment = os.environ.get("ENVIRONMENT")
 if not _environment:
@@ -33,7 +35,11 @@ if not _environment:
 
 _hipchatKey = os.environ.get('HIPCHAT_KEY')
 if not _hipchatKey:
-    print('### Hipchat API Key missing from environment variable HIPCHAT_KEY')
+    logger.error('### Hipchat API Key missing from environment variable HIPCHAT_KEY')
+
+_ledServiceUrl = os.environ.get('LED_SERVICE_URL')
+if not _ledServiceUrl:
+   logger.error('### LED_SERVICE_URL environment variable has not been set') 
 
 def getWeightInGrams(dev="/dev/usb/hiddev0"):
     """
@@ -76,6 +82,26 @@ def potIsLifted():
 
 def shouldPostToHipChat():
     return _loopCount == _logToHipChatLoopCount
+
+def shouldPostToLed():
+    return _loopCount == _logToHipChatLoopCount
+
+def postToLed():
+    displayJson = {}
+    totalAvailableMugs = len(_mugAmounts)
+    displayJson['text'] = "{0} / {1} - {2} / {3}".format(getAvailableMugs(), totalAvailableMugs,
+            _currentWeight, _mugAmounts[totalAvailableMugs - 1])
+
+    url = "{0}/display".format(_ledServiceUrl)
+    payload = json.dumps(displayJson)
+    headers = {'content-type': 'application/json'}
+
+    # TODO: Identify why the this code is throwing the following exception:
+    # requests.exceptions.ConnectionError: ('Connection aborted.', BadStatusLine('HTTP/1.1 1 \r\n',))
+    try:
+        response = requests.post(url, data=payload, headers=headers)
+    except:
+        pass
 
 def logToInitialState():
     utcnow = datetime.utcnow()
@@ -134,9 +160,13 @@ def main(args):
             _currentWeight = tmpWeight
             logToInitialState()
 
-        if shouldPostToHipChat():
+        if shouldPostToLed():
             _loopCount = 0
-            writeToHipChat()
+            postToLed()
+
+        # if shouldPostToHipChat():
+        #     _loopCount = 0
+        #     writeToHipChat()
 
         sleep(1)
 
