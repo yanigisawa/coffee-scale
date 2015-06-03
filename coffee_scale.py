@@ -43,6 +43,8 @@ if __name__ == "__main__":
     handler = TimedRotatingFileHandler(args.tempFile,
             when="m", interval=args.logRotateTimeMinutes, utc=True)
 
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
     logger.addHandler(handler)
 
 _initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
