@@ -173,7 +173,7 @@ class CoffeeScale:
         streamer = Streamer(bucket_name="{0} - Coffee Scale Data".format(self.environment), 
                 bucket_key=bucketKey, access_key=self.initialStateKey)
 
-        if potIsLifted():
+        if self.potIsLifted():
             streamer.log("Coffee Pot Lifted", True)
         streamer.log("Coffee Weight", self._currentWeight)
         streamer.close()
