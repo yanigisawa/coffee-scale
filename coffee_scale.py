@@ -152,7 +152,7 @@ class CoffeeScale:
             shutil.move(fileName, os.path.join(archiveDir, os.path.basename(fileName)))
 
     def shouldPostToLed(self):
-        return self_loopCount == self._logToHipChatLoopCount
+        return self._loopCount == self._logToHipChatLoopCount
 
     def postToLed(self):
         displayJson = {}
