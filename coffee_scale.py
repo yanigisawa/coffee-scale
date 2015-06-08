@@ -158,7 +158,7 @@ class CoffeeScale:
         displayJson = {}
         totalAvailableMugs = len(self._mugAmounts)
         displayJson['text'] = "{0} / {1} - {2} / {3}".format(self.getAvailableMugs(), totalAvailableMugs,
-                _currentWeight, _mugAmounts[totalAvailableMugs - 1])
+                self._currentWeight, self._mugAmounts[totalAvailableMugs - 1])
 
         url = "{0}/display".format(self.ledServiceUrl)
         payload = json.dumps(displayJson)
