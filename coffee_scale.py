@@ -198,16 +198,16 @@ class CoffeeScale:
             if self.shouldLogWeight(tmpWeight):
                 self._logger.info(
                         "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
-                _currentWeight = tmpWeight
+                self._currentWeight = tmpWeight
                 self.logToInitialState()
 
             if self.shouldPostToLed():
-                _loopCount = 0
+                self._loopCount = 0
                 self.postToLed()
 
-            # if shouldPostToHipChat():
-            #     _loopCount = 0
-            #     writeToHipChat()
+            # if self.shouldPostToHipChat():
+            #     self._loopCount = 0
+            #     self.writeToHipChat()
 
             sleep(1)
 
