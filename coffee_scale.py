@@ -201,7 +201,7 @@ class CoffeeScale:
                 _currentWeight = tmpWeight
                 self.logToInitialState()
 
-            if shouldPostToLed():
+            if self.shouldPostToLed():
                 _loopCount = 0
                 self.postToLed()
 
