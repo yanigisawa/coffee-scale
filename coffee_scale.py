@@ -189,21 +189,25 @@ class CoffeeScale:
         self._currentWeight = self.getWeightInGrams()
 
         while True:
-            self._loopCount += 1
-            tmpWeight = self.getWeightInGrams()
-            if datetime.utcnow() > rotateTime:
-                self.moveLogsToArchive(args.tempFile, args.permanentDirectory)
-                rotateTime = datetime.utcnow() + rotateMinutes
+            try:
+                raise Exception('foo', 'bar')
+                self._loopCount += 1
+                tmpWeight = self.getWeightInGrams()
+                if datetime.utcnow() > rotateTime:
+                    self.moveLogsToArchive(args.tempFile, args.permanentDirectory)
+                    rotateTime = datetime.utcnow() + rotateMinutes
 
-            if self.shouldLogWeight(tmpWeight):
-                self._logger.info(
-                        "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
-                self._currentWeight = tmpWeight
-                self.logToInitialState()
+                if self.shouldLogWeight(tmpWeight):
+                    self._logger.info(
+                            "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
+                    self._currentWeight = tmpWeight
+                    self.logToInitialState()
 
-            if self.shouldPostToLed():
-                self._loopCount = 0
-                self.postToLed()
+                if self.shouldPostToLed():
+                    self._loopCount = 0
+                    self.postToLed()
+            except Exception as e:
+                self._logger.error(e)
 
             # if self.shouldPostToHipChat():
             #     self._loopCount = 0
