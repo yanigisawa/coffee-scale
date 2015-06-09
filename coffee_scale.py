@@ -190,7 +190,6 @@ class CoffeeScale:
 
         while True:
             try:
-                raise Exception('foo', 'bar')
                 self._loopCount += 1
                 tmpWeight = self.getWeightInGrams()
                 if datetime.utcnow() > rotateTime:
