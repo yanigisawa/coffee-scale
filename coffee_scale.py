@@ -164,7 +164,7 @@ class CoffeeScale:
         payload = json.dumps(displayJson)
         headers = {'content-type': 'application/json'}
 
-        response = requests.post(url, data=payload, headers=headers)
+        response = requests.post(url, data=payload, headers=headers, timeout=5)
 
     def logToInitialState(self):
         utcnow = datetime.utcnow()
