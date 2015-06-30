@@ -30,6 +30,7 @@ class CoffeeScale:
         self._environment = ''
         self._hipchatKey = ''
         self._ledServiceUrl = ''
+        self._mostRecentLiftedTime = datetime.now()
 
     @property
     def initialStateKey(self):
@@ -157,8 +158,8 @@ class CoffeeScale:
     def postToLed(self):
         displayJson = {}
         totalAvailableMugs = len(self._mugAmounts)
-        displayJson['text'] = "{0} / {1} - {2} / {3}".format(self.getAvailableMugs(), totalAvailableMugs,
-                self._currentWeight, self._mugAmounts[totalAvailableMugs - 1])
+        displayJson['text'] = "{0} / {1} - {2}".format(self.getAvailableMugs(), totalAvailableMugs,
+                self._mostRecentLiftedTime.strftime("%a %H:%M")
 
         url = "{0}/display".format(self.ledServiceUrl)
         payload = json.dumps(displayJson)
@@ -205,6 +206,10 @@ class CoffeeScale:
                 if self.shouldPostToLed():
                     self._loopCount = 0
                     self.postToLed()
+
+                if self.potIsLifted():
+                    self._mostRecentLiftedTime = datetime.now()
+
             except Exception as e:
                 self._logger.error(e)
 
