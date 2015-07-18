@@ -1,6 +1,6 @@
 ISStreamer==0.0.25
 Jinja2==2.7.3
-MacFSEvents==0.4
+# MacFSEvents==0.4
 MarkupSafe==0.23
 backports.ssl-match-hostname==3.4.0.2
 certifi==14.05.14
