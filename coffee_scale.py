@@ -207,4 +207,4 @@ class CoffeeScale:
 if __name__ == "__main__":
     scale = CoffeeScale()
     scale.configureLogFile()
-    scale.main(args)
+    scale.main()
