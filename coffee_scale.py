@@ -70,7 +70,7 @@ class CoffeeScale:
 
     def configureLogFile(self):
         logFile = "/var/log/coffee"
-        rotateInterval = "60"
+        rotateInterval = 60
         handler = TimedRotatingFileHandler(logFile,
                 when="m", interval=rotateInterval, utc=True)
 
@@ -206,6 +206,5 @@ class CoffeeScale:
 
 if __name__ == "__main__":
     scale = CoffeeScale()
-    args = parser.parse_args()
     scale.configureLogFile()
     scale.main(args)
