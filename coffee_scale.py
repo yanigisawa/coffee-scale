@@ -68,21 +68,11 @@ class CoffeeScale:
 
         return self._ledServiceUrl
 
-    def getParser(self):
-        import argparse
-        parser = argparse.ArgumentParser()
-        parser.add_argument('tempFile', help='Temporary output location file to write', 
-                default='/var/tmp/coffee_scale')
-        parser.add_argument('permanentDirectory', help='Permanent storage location for scale data')
-        parser.add_argument('logRotateTimeMinutes', 
-                help='Number of minutes to capture data in the temp-file before writing to the permanent directory',
-                type=int)
-
-        return parser
-
-    def configureLogFile(self, args):
-        handler = TimedRotatingFileHandler(args.tempFile,
-                when="m", interval=args.logRotateTimeMinutes, utc=True)
+    def configureLogFile(self):
+        logFile = "/var/log/coffee"
+        rotateInterval = "60"
+        handler = TimedRotatingFileHandler(logFile,
+                when="m", interval=rotateInterval, utc=True)
 
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
@@ -184,18 +174,13 @@ class CoffeeScale:
         params = getHipchatParameters()
         hipster.method('rooms/message', method='POST', parameters=params)
 
-    def main(self, args):
-        rotateMinutes = timedelta(minutes = args.logRotateTimeMinutes)
-        rotateTime = datetime.utcnow() + rotateMinutes
+    def main(self):
         self._currentWeight = self.getWeightInGrams()
 
         while True:
             try:
                 self._loopCount += 1
                 tmpWeight = self.getWeightInGrams()
-                if datetime.utcnow() > rotateTime:
-                    self.moveLogsToArchive(args.tempFile, args.permanentDirectory)
-                    rotateTime = datetime.utcnow() + rotateMinutes
 
                 if self.shouldLogWeight(tmpWeight):
                     self._logger.info(
@@ -221,7 +206,6 @@ class CoffeeScale:
 
 if __name__ == "__main__":
     scale = CoffeeScale()
-    parser = scale.getParser()
     args = parser.parse_args()
-    scale.configureLogFile(args)
+    scale.configureLogFile()
     scale.main(args)

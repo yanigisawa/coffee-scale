@@ -4,18 +4,6 @@ import coffee_scale as cs
 class CoffeeTest(unittest.TestCase):
     def setUp(self):
         self.scale = cs.CoffeeScale()
-        self.parser = self.scale.getParser()
-
-    def test_empty_args_throws_exception(self):
-        with self.assertRaises(SystemExit):
-            self.parser.parse_args([])
-
-    def test_files_are_extracted(self):
-        args = self.parser.parse_args(['/file/temp', '/file/perm', '1'])
-        print(args)
-        self.assertEquals(args.tempFile, '/file/temp')
-        self.assertEquals(args.permanentDirectory, '/file/perm')
-        self.assertEquals(args.logRotateTimeMinutes, 1)
 
     def test_whenValueChangesLessThanThreshold_LogIsNotWritten(self):
         self.scale._currentWeight = 20
