@@ -9,3 +9,8 @@ python:
 install: "pip install -r requirements.txt"
 # command to run tests
 script: python test_coffee_scale.py
+env:
+  - INITIAL_STATE_ACCESS_KEY=foo
+  - ENVIRONMENT=bar
+  - LED_SERVICE_URL=foobar
+  - HIPCHAT_KEY=myhipchatKey
