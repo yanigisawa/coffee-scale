@@ -24,13 +24,14 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
-        self._mugAmounts = [1200, 1466, 1732, 1998, 2264, 2530]
-        self._mugFluidCapacity = 266
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
         self._ledServiceUrl = ''
         self._mostRecentLiftedTime = datetime.now()
+        self._potWeight = 906
+        self._mugFluidCapacity = 266
+        self._mugAmounts = self.calculateMugAmounts(2380)
 
     @property
     def initialStateKey(self):
@@ -67,6 +68,15 @@ class CoffeeScale:
                 self._logger.error('### LED_SERVICE_URL environment variable has not been set') 
 
         return self._ledServiceUrl
+
+    def calculateMugAmounts(self, maxPotWeight):
+        weight = self._potWeight + self._mugFluidCapacity
+        mugAmounts = []
+        while weight < maxPotWeight:
+            mugAmounts.append(weight)
+            weight += self._mugFluidCapacity
+
+        return mugAmounts
 
     def configureLogFile(self):
         logFile = "/var/log/coffee"

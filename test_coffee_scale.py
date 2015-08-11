@@ -31,9 +31,6 @@ class CoffeeTest(unittest.TestCase):
             self.assertEquals(False, self.scale.shouldPostToHipChat())
 
     def test_hipchatUserIsGiven_WithAMultipleOfNumberOfMugsInPot(self):
-        self.scale._currentWeight = 2600
-        self.assertEquals(6, self.scale.getAvailableMugs())
-
         self.scale._currentWeight = 2264
         self.assertEquals(5, self.scale.getAvailableMugs())
 
