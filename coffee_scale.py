@@ -29,9 +29,12 @@ class CoffeeScale:
         self._hipchatKey = ''
         self._ledServiceUrl = ''
         self._mostRecentLiftedTime = datetime.now()
-        self._potWeight = 906
+        # When Adjusting the Pot Weight, you may also need to adjust the
+        # 'calculateMugAmounts' value. Pass the full pot weight into
+        # that method to automatically calculate mug capacity per pot.
+        self._potWeight = 898
         self._mugFluidCapacity = 266
-        self._mugAmounts = self.calculateMugAmounts(2380)
+        self._mugAmounts = self.calculateMugAmounts(2032) # Full pot capacity
 
     @property
     def initialStateKey(self):
