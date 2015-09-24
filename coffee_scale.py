@@ -120,7 +120,6 @@ class CoffeeScale:
             availableMugs += 1
 
         return availableMugs
-            
 
     def getWeightInGrams(self, dev="/dev/usb/hiddev0"):
         """

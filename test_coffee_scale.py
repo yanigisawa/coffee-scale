@@ -32,6 +32,8 @@ class CoffeeTest(unittest.TestCase):
 
     def test_hipchatUserIsGiven_WithAMultipleOfNumberOfMugsInPot(self):
         self.scale._currentWeight = 2264
+        self.scale._mugAmounts = self.scale.calculateMugAmounts(2380)
+        self.scale._potWeight = 906
         self.assertEquals(5, self.scale.getAvailableMugs())
 
         self.scale._currentWeight = 1999
@@ -48,6 +50,8 @@ class CoffeeTest(unittest.TestCase):
 
     def test_whenWeightWithin90PercentMinus10GramsOfFullMug_RegisterNextAvailableMug(self):
         self.scale._currentWeight = 1164
+        self.scale._mugAmounts = self.scale.calculateMugAmounts(2380)
+        self.scale._potWeight = 906
         self.assertEquals(1, self.scale.getAvailableMugs())
 
         self.scale._currentWeight = 1430
@@ -78,7 +82,6 @@ class CoffeeTest(unittest.TestCase):
         self.assertTrue(self.scale.hipchatKey)
         self.assertTrue(self.scale.environment)
         self.assertTrue(self.scale.ledServiceUrl)
-
 
     @unittest.skip("Only run manually if testing Initial State Integration")
     def test_InitialStateIntegration(self):
