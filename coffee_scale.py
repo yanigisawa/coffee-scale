@@ -34,7 +34,9 @@ class CoffeeScale:
         # that method to automatically calculate mug capacity per pot.
         self._potWeight = 898
         self._mugFluidCapacity = 266
-        self._mugAmounts = self.calculateMugAmounts(2032) # Full pot capacity
+        # The getLedMessage no longer cares what the 
+        # full pot capacity is. It will simply display "X mugs - Wed 08:14"
+        self._mugAmounts = self.calculateMugAmounts(9999) # Full pot capacity
 
     @property
     def initialStateKey(self):
@@ -112,12 +114,8 @@ class CoffeeScale:
         return parameters
 
     def getAvailableMugs(self):
-        availableMugs = 0
-        for mugAmount in self._mugAmounts:
-            minimumWeightForMug = math.floor(mugAmount - (self._mugFluidCapacity * .1)) - 10
-            if self._currentWeight <= minimumWeightForMug:
-                break
-            availableMugs += 1
+        coffeeWeight = self._currentWeight - self._potWeight
+        availableMugs = int(math.floor((coffeeWeight + (coffeeWeight * 0.1)) / self._mugFluidCapacity))
 
         return availableMugs
 
@@ -157,11 +155,16 @@ class CoffeeScale:
     def shouldPostToLed(self):
         return self._loopCount == self._logToHipChatLoopCount
 
+    def getLedMessage(self):
+        available_mugs = self.getAvailableMugs()
+        return "{0} mug{2} - {1}".format(available_mugs,
+                self._mostRecentLiftedTime.strftime("%a %H:%M"), 
+                "" if available_mugs == 1 else "s")
+
     def postToLed(self):
         displayJson = {}
         totalAvailableMugs = len(self._mugAmounts)
-        displayJson['text'] = "{0} / {1} - {2}".format(self.getAvailableMugs(), totalAvailableMugs,
-                self._mostRecentLiftedTime.strftime("%a %H:%M"))
+        displayJson['text'] = self.getLedMessage()
 
         url = "{0}/display".format(self.ledServiceUrl)
         payload = json.dumps(displayJson)

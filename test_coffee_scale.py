@@ -1,5 +1,6 @@
 import unittest
 import coffee_scale as cs
+from datetime import datetime
 
 class CoffeeTest(unittest.TestCase):
     def setUp(self):
@@ -82,6 +83,18 @@ class CoffeeTest(unittest.TestCase):
         self.assertTrue(self.scale.hipchatKey)
         self.assertTrue(self.scale.environment)
         self.assertTrue(self.scale.ledServiceUrl)
+
+    def test_ledMessage_containsOnlyMugsRemaining(self):
+        self.scale._currentWeight = 2000
+        self.scale._mostRecentLiftedTime = datetime.now()
+        self.assertEqual("4 mugs - {0}".format(
+            self.scale._mostRecentLiftedTime.strftime("%a %H:%M")),
+            self.scale.getLedMessage())
+
+        self.scale._currentWeight = 1164
+        self.assertEqual("1 mug - {0}".format(
+            self.scale._mostRecentLiftedTime.strftime("%a %H:%M")),
+            self.scale.getLedMessage())
 
     @unittest.skip("Only run manually if testing Initial State Integration")
     def test_InitialStateIntegration(self):
