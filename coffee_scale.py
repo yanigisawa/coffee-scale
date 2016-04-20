@@ -29,6 +29,8 @@ class CoffeeScale:
         self._hipchatKey = ''
         self._ledServiceUrl = ''
         self._mostRecentLiftedTime = datetime.now()
+        self._dynamoApiKey = ''
+        self._dynamoApiUrl = ''
         # When Adjusting the Pot Weight, you may also need to adjust the
         # 'calculateMugAmounts' value. Pass the full pot weight into
         # that method to automatically calculate mug capacity per pot.
@@ -73,6 +75,24 @@ class CoffeeScale:
                 self._logger.error('### LED_SERVICE_URL environment variable has not been set') 
 
         return self._ledServiceUrl
+
+    @property
+    def dynamoApiKey(self):
+        if not self._dynamoApiKey:
+            self._dynamoApiKey = os.environ.get("DYNAMO_API_KEY")
+            if not self._dynamoApiKey:
+                self._logger.error("### DYNAMO_API_KEY environment variable not set")
+
+        return self._dynamoApiKey
+
+    @property
+    def dynamoApiUrl(self):
+        if not self._dynamoApiUrl:
+            self._dynamoApiUrl = os.environ.get("DYNAMO_API_URL")
+            if not self._dynamoApiUrl:
+                self._logger.error("### DYNAMO_API_URL environment variable not set")
+
+        return self._dynamoApiUrl
 
     def calculateMugAmounts(self, maxPotWeight):
         weight = self._potWeight + self._mugFluidCapacity
@@ -189,6 +209,29 @@ class CoffeeScale:
         params = getHipchatParameters()
         hipster.method('rooms/message', method='POST', parameters=params)
 
+    def writeToDynamo(self):
+        """
+        curl -X POST -H 'x-api-key: <apikey>' -d@event.json <api-url>
+
+        event.json:
+        {
+            "timestamp": "2016-04-20T12:13:05",
+            "weight": 1400,
+            "scale_id": "0"
+        }
+        """
+        headers = {}
+        headers["x-api-key"] = self.dynamoApiKey
+        url = self.dynamoApiUrl
+        data = {}
+        data["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%X")
+        data["weight"] = self._currentWeight
+        data["scale_id"] = "0"
+
+        response = requests.post(url, headers = headers, data = json.dumps(data), timeout = 5)
+        if response.status_code != 200:
+            self._logger.error("Failed to post scale value to dynamo: {0}".format(response))
+
     def main(self):
         self._currentWeight = self.getWeightInGrams()
 
@@ -202,6 +245,7 @@ class CoffeeScale:
                             "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
                     self.logToInitialState()
+                    self.writeToDynamo()
 
                 if self.shouldPostToLed():
                     self._loopCount = 0
