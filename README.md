@@ -31,3 +31,6 @@ There is built-in support for [initial state](https://www.initialstate.com/) das
 * 51-user-scale.rules - udev file to be placed at /etc/udev/rules.d to automatically map /dev/usb/hiddev0 to /dev/dymo_scale
 * usescale.py - Reference python implementation lifted [from here.](http://www.thok.org/intranet/python/usb/index.html) Included here as a reference in case it is needed in the future for future scale reverse engineering.
 
+### References ###
+
+Initial inspiration for this repository was pulled from [this C repo](https://github.com/erjiang/usbscale). The scales.h file was my first stop in finding a scale that would be supported via USB and easily read with either C or Python code.
