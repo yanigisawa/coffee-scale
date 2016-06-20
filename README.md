@@ -6,7 +6,7 @@ Simple python code base to read binary data from a [Dymo M10 scale](http://www.a
 
 1. Setup a Raspberry Pi running Raspbian
 
-2. All of the following: create a virtualenv using the dependencies from requirements.txt
+2. Create a virtualenv using the dependencies from requirements.txt
 
   ```
   virtualenv coffeeEnv
