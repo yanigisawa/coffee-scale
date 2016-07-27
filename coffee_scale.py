@@ -148,13 +148,12 @@ class CoffeeScale:
 
         grams = -1
         try:
-            fd = os.open(dev, os.O_RDONLY)
-
-            # Read 4 unsigned integers from USB device
-            hiddev_event_fmt = "IIII"
-            usb_binary_read = struct.unpack(hiddev_event_fmt, os.read(fd, struct.calcsize(hiddev_event_fmt)))
-            grams = usb_binary_read[3]
-            os.close(fd)
+            with open(dev, 'rb') as f:
+                # Read 4 unsigned integers from USB device
+                fmt = "IIII"
+                bytes_to_read = struct.calcsize(fmt)
+                usb_binary_read = struct.unpack(fmt, f.read(bytes_to_read))
+                grams = usb_binary_read[3]
         except OSError as e:
             print("{0} - Failed to read from USB device".format(datetime.utcnow()))
         return grams
