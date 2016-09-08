@@ -1,6 +1,6 @@
 import unittest
 import coffee_scale as cs
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class CoffeeTest(unittest.TestCase):
     def setUp(self):
@@ -92,9 +92,22 @@ class CoffeeTest(unittest.TestCase):
             self.scale.getLedMessage())
 
         self.scale._currentWeight = 1164
-        self.assertEqual("1 mug - {0}".format(
-            self.scale._mostRecentLiftedTime.strftime("%a %H:%M")),
-            self.scale.getLedMessage())
+        self.assertTrue(self.scale.getLedMessage() in self.scale._emptyMessages)
+
+    def test_after60Minutes_DisplaysFunnyMessage(self):
+        """
+        - Hey, you want some coffee?
+        - Pick me up
+        - Coffee is more than One Hour Old
+        """
+        oneHourAgo = timedelta(hours = -1)
+        self.scale._mostRecentLiftedTime = datetime.now() + oneHourAgo
+        self.scale._currentWeight = 4000
+        self.assertEqual("Coffee is One hour Old", self.scale.getLedMessage())
+
+        self.scale._mostRecentLiftedTime = datetime.now() + (oneHourAgo * 2)
+        self.assertTrue(self.scale.getLedMessage() in self.scale._emptyMessages)
+
 
     @unittest.skip("Only run manually if testing Initial State Integration")
     def test_InitialStateIntegration(self):

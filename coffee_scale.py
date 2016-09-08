@@ -24,6 +24,7 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
+        self._logToLedLoopCount = 40
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
@@ -39,6 +40,8 @@ class CoffeeScale:
         # The getLedMessage no longer cares what the 
         # full pot capacity is. It will simply display "X mugs - Wed 08:14"
         self._mugAmounts = self.calculateMugAmounts(9999) # Full pot capacity
+        self._emptyMessages = ["MAKE MORE COFFEE", "Shaka, when the walls fell", "I doubt you want to drink this",
+                "I hope you like Iced Coffee", "Nothing to see here, move along"]
 
     @property
     def initialStateKey(self):
@@ -172,10 +175,26 @@ class CoffeeScale:
             shutil.move(fileName, os.path.join(archiveDir, os.path.basename(fileName)))
 
     def shouldPostToLed(self):
-        return self._loopCount == self._logToHipChatLoopCount
+        return self._loopCount == self._logToLedLoopCount
+
+    def getRandomEmptyMessage(self):
+        import random
+        return random.sample(self._emptyMessages, 1)[0]
 
     def getLedMessage(self):
         available_mugs = self.getAvailableMugs()
+        if available_mugs <= 1:
+            return self.getRandomEmptyMessage()
+
+        oneHour = timedelta(hours = -1)
+        oneHourAgo = datetime.now() + oneHour
+        twoHoursAgo = datetime.now() + (oneHour * 2)
+
+        if self._mostRecentLiftedTime < twoHoursAgo:
+            return self.getRandomEmptyMessage()
+        elif self._mostRecentLiftedTime < oneHourAgo:
+            return "Coffee is One hour Old"
+
         return "{0} mug{2} - {1}".format(available_mugs,
                 self._mostRecentLiftedTime.strftime("%a %H:%M"), 
                 "" if available_mugs == 1 else "s")
