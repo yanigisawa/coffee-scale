@@ -186,9 +186,8 @@ class CoffeeScale:
         if available_mugs <= 1:
             return self.getRandomEmptyMessage()
 
-        oneHour = timedelta(hours = -1)
-        oneHourAgo = datetime.now() + oneHour
-        twoHoursAgo = datetime.now() + (oneHour * 2)
+        oneHourAgo = datetime.now() + timedelta(hours = -1)
+        twoHoursAgo = datetime.now() + timedelta(hours = -2)
 
         if self._mostRecentLiftedTime < twoHoursAgo:
             return self.getRandomEmptyMessage()
