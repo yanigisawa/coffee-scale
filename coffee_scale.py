@@ -41,7 +41,9 @@ class CoffeeScale:
         # full pot capacity is. It will simply display "X mugs - Wed 08:14"
         self._mugAmounts = self.calculateMugAmounts(9999) # Full pot capacity
         self._emptyMessages = ["MAKE MORE COFFEE", "Shaka, when the walls fell", "I doubt you want to drink this",
-                "I hope you like Iced Coffee", "Nothing to see here, move along"]
+                "I hope you like Iced Coffee", "Nothing to see here, move along", "Sarah is watching, make more coffee",
+                "I wonder if we need more coffee?", "How is the weather today?", "Is it time for another fridge clean-out?",
+                "We never talk anymore Dave :("]
 
     @property
     def initialStateKey(self):
