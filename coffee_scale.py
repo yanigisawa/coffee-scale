@@ -177,7 +177,7 @@ class CoffeeScale:
             shutil.move(fileName, os.path.join(archiveDir, os.path.basename(fileName)))
 
     def shouldPostToLed(self):
-        return self._loopCount == self._logToLedLoopCount
+        return self._loopCount >= self._logToLedLoopCount
 
     def getRandomEmptyMessage(self):
         import random
