@@ -92,7 +92,10 @@ class CoffeeTest(unittest.TestCase):
             self.scale.getLedMessage())
 
         self.scale._currentWeight = 1164
-        self.assertTrue(self.scale.getLedMessage() in self.scale._emptyMessages)
+        with open("chuck_norris.txt") as f:
+            jokes = f.readlines()
+        jokes = [j.strip() for j in jokes]
+        self.assertTrue(self.scale.getLedMessage() in jokes)
 
     def test_after60Minutes_DisplaysFunnyMessage(self):
         """
@@ -106,7 +109,10 @@ class CoffeeTest(unittest.TestCase):
         self.assertEqual("Coffee is One hour Old", self.scale.getLedMessage())
 
         self.scale._mostRecentLiftedTime = datetime.now() + (oneHourAgo * 2)
-        self.assertTrue(self.scale.getLedMessage() in self.scale._emptyMessages)
+        with open("chuck_norris.txt") as f:
+            jokes = f.readlines()
+        jokes = [j.strip() for j in jokes]
+        self.assertTrue(self.scale.getLedMessage() in jokes)
 
 
     @unittest.skip("Only run manually if testing Initial State Integration")
