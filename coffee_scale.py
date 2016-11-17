@@ -181,7 +181,10 @@ class CoffeeScale:
 
     def getRandomEmptyMessage(self):
         import random
-        return random.sample(self._emptyMessages, 1)[0]
+        with open("chuck_norris.txt") as f:
+            jokes = f.readlines()
+
+        return random.sample(jokes, 1)[0].strip()
 
     def getLedMessage(self):
         available_mugs = self.getAvailableMugs()
