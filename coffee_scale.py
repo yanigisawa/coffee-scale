@@ -181,7 +181,8 @@ class CoffeeScale:
 
     def getRandomEmptyMessage(self):
         import random
-        with open("chuck_norris.txt") as f:
+        chuck = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chuck_norris.txt")
+        with open(chuck) as f:
             jokes = f.readlines()
 
         return random.sample(jokes, 1)[0].strip()
