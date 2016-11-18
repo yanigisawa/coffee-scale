@@ -24,7 +24,7 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
-        self._logToLedLoopCount = 40
+        self._logToLedLoopCount = 80
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
