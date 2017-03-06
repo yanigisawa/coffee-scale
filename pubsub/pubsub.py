@@ -41,6 +41,8 @@ class Listener(threading.Thread):
                 # to wait until thread has properly cleaned up
                 self._worker.halt()
                 self._worker.join()
+                del self._worker
+                self._worker = None
 
             if item['data'] == 'KILL':
                 log.debug('received kill message')
