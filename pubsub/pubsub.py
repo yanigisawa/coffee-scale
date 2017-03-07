@@ -1,22 +1,26 @@
 import redis
 import threading
 import time
-from animation import *
 import os
 import logging
+from subprocess import Popen
+import signal
 
 
 class Worker(threading.Thread):
-    def __init__(self, animation = None):
+    def __init__(self, module = None):
         threading.Thread.__init__(self)
-        self.animation = animation
+        self.pythonModule = module
 
     def run(self):
-        self.animation.run()
+        path = '/home/pi/src/coffee-scale/pubsub/animation/{0}'.format(self.pythonModule)
+        args = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16']
+        self.p = Popen(args)
+
 
     def halt(self):
-        log.debug('called halt')
-        self.animation.set_halt()
+        log.debug('send terminate')
+        self.p.terminate()
 
 class Listener(threading.Thread):
     def __init__(self, r, channels):
@@ -27,9 +31,8 @@ class Listener(threading.Thread):
         self._worker = None
     
     def work(self, item):
-        className = '{0}()'.format(item['data'])
-        animation = eval(className)
-        self._worker = Worker(animation)
+        className = '{0}'.format(item['data'])
+        self._worker = Worker(className)
         self._worker.start()
     
     def run(self):
@@ -48,8 +51,8 @@ class Listener(threading.Thread):
                 log.debug('received kill message')
                 self.pubsub.unsubscribe()
                 break
-            # elif item['data'] == 'RELOAD':
-            #     from animations import *
+            elif item['data'] == 'STOP':
+                pass
             else:
                 self.work(item)
 

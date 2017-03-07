@@ -1,7 +1,6 @@
-from base import SampleBase
-import logging
+#!/usr/bin/env python
+from samplebase import SampleBase
 
-log = logging.getLogger()
 
 class PulsingColors(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -12,10 +11,6 @@ class PulsingColors(SampleBase):
         continuum = 0
 
         while True:
-            if self._halt.isSet():
-                log.info('Halting pulsing colors')
-                break
-
             self.usleep(5 * 1000)
             continuum += 1
             continuum %= 3 * 255
@@ -39,3 +34,9 @@ class PulsingColors(SampleBase):
 
             self.offscreen_canvas.Fill(red, green, blue)
             self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
+
+# Main function
+if __name__ == "__main__":
+    pulsing_colors = PulsingColors()
+    if (not pulsing_colors.process()):
+        pulsing_colors.print_help()

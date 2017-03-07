@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from base import SampleBase
+from samplebase import SampleBase
 import time
 import logging
 
@@ -19,6 +19,7 @@ class Mario(SampleBase):
     flesh = (155, 155, 0)
     brown = (32, 5, 0)
     blue = (0, 0, 155)
+    _halt = None
 
     def __init__(self, *args, **kwargs):
         super(Mario, self).__init__(*args, **kwargs)
@@ -36,7 +37,7 @@ class Mario(SampleBase):
         self.canvas = self.matrix.CreateFrameCanvas()
         inverse = False
         while True:
-            if self._halt.isSet():
+            if self._halt and self._halt.isSet():
                 log.info('Halting Mario')
                 break
 
@@ -65,7 +66,7 @@ class Mario(SampleBase):
             #     # self.draw(self.getStanding(x, y, inverse))
                 self.draw(self.getJumping(x, y, inverse))
 
-            time.sleep(0.4)
+            time.sleep(0.2)
             x += step
             if x > 31 or x < -14:
                 step *= -1
@@ -1013,3 +1014,9 @@ class Mario(SampleBase):
         return pixels
             
 
+
+# Main function
+if __name__ == "__main__":
+    mario = Mario()
+    if (not mario.process()):
+        mario.print_help()

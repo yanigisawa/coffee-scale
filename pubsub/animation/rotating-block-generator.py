@@ -1,19 +1,11 @@
-import argparse
-import time
-import sys
-import os
-import logging
-from base import SampleBase
+#!/usr/bin/env python
+from samplebase import SampleBase
 import math
 
-from base import SampleBase 
 
-log = logging.getLogger()
-
-
-class Square(SampleBase):
+class RotatingBlockGenerator(SampleBase):
     def __init__(self, *args, **kwargs):
-        super(Square, self).__init__(*args, **kwargs)
+        super(RotatingBlockGenerator, self).__init__(*args, **kwargs)
 
     def rotate(self, x, y, angle):
         return {
@@ -45,10 +37,6 @@ class Square(SampleBase):
         offset_canvas = self.matrix.CreateFrameCanvas()
 
         while True:
-            if self._halt.isSet(): 
-                log.debug('received halt')
-                break
-
             rotation += 1
             rotation %= 360
 
@@ -65,4 +53,8 @@ class Square(SampleBase):
 
             offset_canvas = self.matrix.SwapOnVSync(offset_canvas)
 
-
+# Main function
+if __name__ == "__main__":
+    rotating_block_generator = RotatingBlockGenerator()
+    if (not rotating_block_generator.process()):
+        rotating_block_generator.print_help()
