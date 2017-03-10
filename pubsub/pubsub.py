@@ -5,17 +5,22 @@ import os
 import logging
 from subprocess import Popen
 import signal
+import json
 
 
 class Worker(threading.Thread):
-    def __init__(self, module = None):
+    def __init__(self, module = None, args = None):
         threading.Thread.__init__(self)
         self.pythonModule = module
+        self.args = args
 
     def run(self):
-        path = '/home/pi/src/coffee-scale/pubsub/animation/{0}'.format(self.pythonModule)
-        args = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16']
-        self.p = Popen(args)
+        path = os.path.abspath('animation/{}'.format(self.pythonModule))
+        process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16']
+        if self.args != None:
+            process.append(self.args)
+        log.debug('Running {0}'.format(process))
+        self.p = Popen(process)
 
 
     def halt(self):
@@ -31,8 +36,12 @@ class Listener(threading.Thread):
         self._worker = None
     
     def work(self, item):
-        className = '{0}'.format(item['data'])
-        self._worker = Worker(className)
+        data = json.loads(item['data'])
+        className = '{0}'.format(data['moduleName'])
+        args = None
+        if 'args' in data.keys():
+            args = data['args']
+        self._worker = Worker(className, args)
         self._worker.start()
     
     def run(self):
@@ -47,11 +56,11 @@ class Listener(threading.Thread):
                 del self._worker
                 self._worker = None
 
-            if item['data'] == 'KILL':
+            if item['data'].upper() == 'KILL':
                 log.debug('received kill message')
                 self.pubsub.unsubscribe()
                 break
-            elif item['data'] == 'STOP':
+            elif item['data'].upper() == 'STOP':
                 pass
             else:
                 self.work(item)
