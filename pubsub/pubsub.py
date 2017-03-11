@@ -69,7 +69,7 @@ if __name__ == "__main__":
     console = logging.StreamHandler()
     log = logging.getLogger()
     log.addHandler(console)
-    log.setLevel(logging.DEBUG)
+    # log.setLevel(logging.DEBUG)
     queue = os.environ.get('REDIS_ANIMATION_QUEUE')
     client = Listener(redis.Redis(), [queue])
     client.start()
