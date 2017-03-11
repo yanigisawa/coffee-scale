@@ -13,6 +13,8 @@ import hipchat
 import math
 import requests
 import json
+import random
+import redis
 
 
 class CoffeeScale:
@@ -44,6 +46,17 @@ class CoffeeScale:
                 "I hope you like Iced Coffee", "Nothing to see here, move along", "Sarah is watching, make more coffee",
                 "I wonder if we need more coffee?", "How is the weather today?", "Is it time for another fridge clean-out?",
                 "We never talk anymore Dave :("]
+        self._redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self._redisMessageQueue = ''
+
+    @property
+    def redisMessageQueue(self):
+        if not self._redisMessageQueue:
+            self._redisMessageQueue = os.environ.get('REDIS_ANIMATION_QUEUE')
+            if not self._redisMessageQueue:
+                self._logger.error('### Redis Animation Queue not set')
+
+        return self._redisMessageQueue
 
     @property
     def initialStateKey(self):
@@ -179,30 +192,39 @@ class CoffeeScale:
     def shouldPostToLed(self):
         return self._loopCount >= self._logToLedLoopCount
 
-    def getRandomEmptyMessage(self):
-        import random
+    def getRandomChuckNorris(self):
         chuck = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chuck_norris.txt")
         with open(chuck) as f:
             jokes = f.readlines()
 
         return random.sample(jokes, 1)[0].strip()
 
+    def getRandomEmptyMessage(self):
+        animations = ['rotating-block-generator.py', 'mario.py', 'kit.py', 'scanning-pixel.py']
+        return random.sample(animations, 1)[0].strip()
+
     def getLedMessage(self):
         available_mugs = self.getAvailableMugs()
-        if available_mugs <= 1:
-            return self.getRandomEmptyMessage()
+        if available_mugs < 1:
+            return (self.getRandomEmptyMessage(), None)
 
         oneHourAgo = datetime.now() + timedelta(hours = -1)
         twoHoursAgo = datetime.now() + timedelta(hours = -2)
 
         if self._mostRecentLiftedTime < twoHoursAgo:
-            return self.getRandomEmptyMessage()
-        elif self._mostRecentLiftedTime < oneHourAgo:
-            return "Coffee is One hour Old"
+            return (self.getRandomEmptyMessage(), None)
 
-        return "{0} mug{2} - {1}".format(available_mugs,
+        return ('fixed-text.py', "{0} mug{2}::{1}".format(available_mugs,
                 self._mostRecentLiftedTime.strftime("%a %H:%M"), 
-                "" if available_mugs == 1 else "s")
+                "" if available_mugs == 1 else "s"))
+
+    def postToLedRedis(self):
+        displayJson = {}
+        totalAvailableMugs = len(self._mugAmounts)
+        animation, args = self.getLedMessage()
+        displayJson['moduleName'] = animation
+        displayJson['args'] = self.getLedMessage()
+        self._redis.publish(self.redisMessageQueue, json.dumps(displayJson))
 
     def postToLed(self):
         displayJson = {}
@@ -272,7 +294,7 @@ class CoffeeScale:
 
                 if self.shouldPostToLed():
                     self._loopCount = 0
-                    self.postToLed()
+                    self.postToLedRedis()
 
                 if self.potIsLifted():
                     self._mostRecentLiftedTime = datetime.now()
