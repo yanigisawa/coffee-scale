@@ -19,6 +19,8 @@ import redis
 
 class CoffeeScale:
     def __init__(self):
+        self._animations = ['rotating-block-generator.py', 'mario.py', 'kit.py', 'scanning-pixel.py',
+            'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py']
         self._logger = logging.getLogger("coffee_log")
         self._logger.setLevel(logging.INFO)
         self._currentWeight = 0
@@ -200,8 +202,7 @@ class CoffeeScale:
         return random.sample(jokes, 1)[0].strip()
 
     def getRandomEmptyMessage(self):
-        animations = ['rotating-block-generator.py', 'mario.py', 'kit.py', 'scanning-pixel.py']
-        return random.sample(animations, 1)[0].strip()
+        return random.sample(self._animations, 1)[0].strip()
 
     def getLedMessage(self):
         available_mugs = self.getAvailableMugs()
