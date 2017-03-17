@@ -13,7 +13,7 @@ class FixedText(SampleBase):
     def run(self):
         canvas = self.matrix
         font = graphics.Font()
-        font.LoadFont("animation/fonts/4x6.bdf")
+        font.LoadFont("animation/fonts/5x7.bdf")
 
         line1_color = []
         line2_color = []
