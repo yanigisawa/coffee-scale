@@ -10,5 +10,6 @@ channel = redis.pubsub()
 
 queue = os.environ.get('REDIS_ANIMATION_QUEUE')
 process = {}
-process['moduleName'] = 'mario.py'
+# process['moduleName'] = 'mario.py'
+process['moduleName'] = 'scanning-pixel.py'
 redis.publish(queue, json.dumps(process))

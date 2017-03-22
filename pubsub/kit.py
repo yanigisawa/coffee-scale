@@ -10,7 +10,7 @@ channel = redis.pubsub()
 
 queue = os.environ.get('REDIS_ANIMATION_QUEUE')
 process = {}
-process['moduleName'] = 'gol-red-glider.py'
+process['moduleName'] = 'kit.py'
 # process['moduleName'] = 'gol-block-switch.py'
 # process['moduleName'] = 'gol-acorn.py'
 # process['moduleName'] = 'gol-pent.py'

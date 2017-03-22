@@ -16,7 +16,7 @@ class Worker(threading.Thread):
 
     def run(self):
         path = os.path.abspath('animation/{}'.format(self.pythonModule))
-        process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16']
+        process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16', '--led-pwm-lsb-nanoseconds', '300']
         if self.args != None:
             process.append(self.args)
         log.debug('Running {0}'.format(process))

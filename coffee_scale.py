@@ -9,7 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
 from ISStreamer.Streamer import Streamer
-import hipchat
+# import hipchat
 import math
 import requests
 import json
@@ -224,7 +224,7 @@ class CoffeeScale:
         totalAvailableMugs = len(self._mugAmounts)
         animation, args = self.getLedMessage()
         displayJson['moduleName'] = animation
-        displayJson['args'] = self.getLedMessage()
+        displayJson['args'] = args
         self._redis.publish(self.redisMessageQueue, json.dumps(displayJson))
 
     def postToLed(self):
@@ -291,6 +291,7 @@ class CoffeeScale:
                             "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
                     self.logToInitialState()
+                    self.postToLedRedis()
                     self.writeToDynamo()
 
                 if self.shouldPostToLed():
