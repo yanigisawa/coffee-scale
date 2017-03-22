@@ -209,7 +209,6 @@ class CoffeeScale:
         if available_mugs < 1:
             return (self.getRandomEmptyMessage(), None)
 
-        oneHourAgo = datetime.now() + timedelta(hours = -1)
         twoHoursAgo = datetime.now() + timedelta(hours = -2)
 
         if self._mostRecentLiftedTime < twoHoursAgo:
@@ -229,7 +228,6 @@ class CoffeeScale:
 
     def postToLed(self):
         displayJson = {}
-        totalAvailableMugs = len(self._mugAmounts)
         displayJson['text'] = self.getLedMessage()
 
         url = "{0}/display".format(self.ledServiceUrl)
