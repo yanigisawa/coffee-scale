@@ -87,8 +87,8 @@ class CoffeeTest(unittest.TestCase):
     def test_ledMessage_containsOnlyMugsRemaining(self):
         self.scale._currentWeight = 2000
         self.scale._mostRecentLiftedTime = datetime.now()
-        self.assertEqual("4 mugs::{0}".format(
-            self.scale._mostRecentLiftedTime.strftime("%a %H:%M")),
+        self.assertEqual("-t 4 mugs::{0}".format(
+            self.scale._mostRecentLiftedTime.strftime("%H:%M")),
             self.scale.getLedMessage()[1])
 
         self.scale._currentWeight = 100
