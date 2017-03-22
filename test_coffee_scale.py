@@ -92,9 +92,8 @@ class CoffeeTest(unittest.TestCase):
             self.scale.getLedMessage()[1])
 
         self.scale._currentWeight = 100
-        animations = ['rotating-block-generator.py', 'mario.py', 'kit.py', 'scanning-pixel.py']
         print(self.scale.getLedMessage())
-        self.assertTrue(self.scale.getLedMessage()[0] in animations)
+        self.assertTrue(self.scale.getLedMessage()[0] in self.scale._animations)
 
 
     @unittest.skip("Only run manually if testing Initial State Integration")
