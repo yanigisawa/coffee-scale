@@ -102,7 +102,7 @@ class GameOfLifeBase(SampleBase):
     def isRepeatingPattern(self):
         if len(self._evolutionQueue) > 30:
             self._evolutionQueue.pop(0)
-        elif len(self._evolutionQueue) == 0:
+        elif self._initialState == None:
             self._initialState = self.encode()
 
         self._evolutionQueue.append(self.encode())

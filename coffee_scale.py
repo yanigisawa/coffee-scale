@@ -9,7 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
 from ISStreamer.Streamer import Streamer
-import hipchat
+# import hipchat
 import math
 import requests
 import json
@@ -289,6 +289,7 @@ class CoffeeScale:
                             "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
                     self.logToInitialState()
+                    self.postToLedRedis()
                     self.writeToDynamo()
                     self.postToLedRedis()
 

@@ -30,7 +30,7 @@ class GameOfLifeBlockSwitch(GameOfLifeBase):
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(0.2)
+            time.sleep(0.3)
             self.evolve()
 
 
