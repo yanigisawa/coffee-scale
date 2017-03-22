@@ -215,9 +215,9 @@ class CoffeeScale:
         if self._mostRecentLiftedTime < twoHoursAgo:
             return (self.getRandomEmptyMessage(), None)
 
-        return ('fixed-text.py', "{0} mug{2}::{1}".format(available_mugs,
-                self._mostRecentLiftedTime.strftime("%a %H:%M"), 
-                "" if available_mugs == 1 else "s"))
+        args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
+                "" if available_mugs == 1 else "s")
+        return 'fixed-text.py', args
 
     def postToLedRedis(self):
         displayJson = {}
@@ -293,10 +293,11 @@ class CoffeeScale:
                     self.logToInitialState()
                     self.postToLedRedis()
                     self.writeToDynamo()
-
-                if self.shouldPostToLed():
-                    self._loopCount = 0
                     self.postToLedRedis()
+
+                # if self.shouldPostToLed():
+                #     self._loopCount = 0
+                #     self.postToLedRedis()
 
                 if self.potIsLifted():
                     self._mostRecentLiftedTime = datetime.now()
