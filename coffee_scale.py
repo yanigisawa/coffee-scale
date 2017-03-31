@@ -19,7 +19,7 @@ import redis
 
 class CoffeeScale:
     def __init__(self):
-        self._animations = ['rotating-block-generator.py', 'mario.py', 'kit.py', 'scanning-pixel.py',
+        self._animations = ['mario.py', 'kit.py', 'scanning-pixel.py',
             'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py']
         self._logger = logging.getLogger("coffee_log")
         self._logger.setLevel(logging.INFO)
@@ -293,19 +293,15 @@ class CoffeeScale:
                     self.writeToDynamo()
                     self.postToLedRedis()
 
-                # if self.shouldPostToLed():
-                #     self._loopCount = 0
-                #     self.postToLedRedis()
+                if self.shouldPostToLed():
+                    self._loopCount = 0
+                    self.postToLedRedis()
 
                 if self.potIsLifted():
                     self._mostRecentLiftedTime = datetime.now()
 
             except Exception as e:
                 self._logger.error(e)
-
-            # if self.shouldPostToHipChat():
-            #     self._loopCount = 0
-            #     self.writeToHipChat()
 
             sleep(1)
 

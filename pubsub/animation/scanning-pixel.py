@@ -13,22 +13,25 @@ class SimpleSquare(SampleBase):
         x, y = 0, 0
         min_x, max_x = 0, 16
         min_y, max_y = 0, 32
+        direction = 1
         while True:
             self.usleep(50000)
             for i in range(0, max_x):
                 for j in range(0, max_y):
                     if i == x and j == y:
-                        offset_canvas.SetPixel(j, i, 150, 50, 0)
+                        offset_canvas.SetPixel(i, j, 150, 50, 0)
                     else:
-                        offset_canvas.SetPixel(j, i, 0, 0, 0)
+                        offset_canvas.SetPixel(i, j, 0, 0, 0)
 
-            y = y + 1
-            if y > max_y:
-                y = 0
-                x = x + 1
 
-                if x > max_x:
-                    x = 0
+            x = x + 1 * direction
+            if x > max_x or x < min_x:
+                direction = direction * -1
+
+                y = y + 1
+                if y > max_y:
+                    y = 0
+
 
             # for x in range(0, self.matrix.width):
             #     offset_canvas.SetPixel(x, x, 255, 255, 255)
