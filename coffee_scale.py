@@ -9,17 +9,18 @@ from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
 from ISStreamer.Streamer import Streamer
-# import hipchat
 import math
 import requests
 import json
 import random
 import redis
+import select
+import signal
 
 
 class CoffeeScale:
     def __init__(self):
-        self._animations = ['mario.py', 'kit.py', 'scanning-pixel.py',
+        self._animations = ['mario.py', 'kit.py', 'scanning-pixel.py', 'rotating-block-generator.py',
             'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py']
         self._logger = logging.getLogger("coffee_log")
         self._logger.setLevel(logging.INFO)
@@ -28,7 +29,7 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
-        self._logToLedLoopCount = 80
+        self._logToLedLoopCount = 60
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
@@ -129,9 +130,12 @@ class CoffeeScale:
         handler = TimedRotatingFileHandler(logFile,
                 when="m", interval=rotateInterval, utc=True)
 
+        consoleHandler = logging.StreamHandler()
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
+        consoleHandler.setFormatter(formatter)
+        # self._logger.addHandler(handler)
+        self._logger.addHandler(consoleHandler)
 
     def shouldLogWeight(self, newReading):
         return abs(self._currentWeight - newReading) > self._weightChangedThreshold
@@ -168,12 +172,14 @@ class CoffeeScale:
 
         grams = -1
         try:
-            with open(dev, 'rb') as f:
+            with open(dev, 'r+b') as f:
                 # Read 4 unsigned integers from USB device
                 fmt = "IIII"
                 bytes_to_read = struct.calcsize(fmt)
-                usb_binary_read = struct.unpack(fmt, f.read(bytes_to_read))
-                grams = usb_binary_read[3]
+                r = f.read(bytes_to_read)
+                usb_binary_read = struct.unpack(fmt, r)
+                if len(usb_binary_read) == 4: 
+                    grams = usb_binary_read[3]
         except OSError as e:
             print("{0} - Failed to read from USB device".format(datetime.utcnow()))
         return grams
@@ -276,22 +282,25 @@ class CoffeeScale:
         if response.status_code != 200:
             self._logger.error("Failed to post scale value to dynamo: {0}".format(response))
 
+    def handle_alarm(self, signum, frame):
+        raise Exception("signum: {0} - frame: {1}".format(signum, frame))
+
     def main(self):
         self._currentWeight = self.getWeightInGrams()
+        signal.signal(signal.SIGALRM, self.handle_alarm)
 
         while True:
             try:
                 self._loopCount += 1
+                signal.alarm(5)
                 tmpWeight = self.getWeightInGrams()
 
                 if self.shouldLogWeight(tmpWeight):
-                    self._logger.info(
-                            "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
+                    # self._logger.info( "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
-                    self.logToInitialState()
+                    # self.logToInitialState()
                     self.postToLedRedis()
                     self.writeToDynamo()
-                    self.postToLedRedis()
 
                 if self.shouldPostToLed():
                     self._loopCount = 0
@@ -302,6 +311,8 @@ class CoffeeScale:
 
             except Exception as e:
                 self._logger.error(e)
+            finally:
+                signal.alarm(0)
 
             sleep(1)
 
