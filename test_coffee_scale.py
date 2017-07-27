@@ -80,39 +80,20 @@ class CoffeeTest(unittest.TestCase):
 
     def test_environmentVariables_AreSet(self):
         self.assertTrue(self.scale.initialStateKey)
-        self.assertTrue(self.scale.hipchatKey)
         self.assertTrue(self.scale.environment)
         self.assertTrue(self.scale.ledServiceUrl)
+        self.assertTrue(self.scale.redisMessageQueue)
 
     def test_ledMessage_containsOnlyMugsRemaining(self):
         self.scale._currentWeight = 2000
         self.scale._mostRecentLiftedTime = datetime.now()
-        self.assertEqual("4 mugs - {0}".format(
-            self.scale._mostRecentLiftedTime.strftime("%a %H:%M")),
-            self.scale.getLedMessage())
+        self.assertEqual("-t 4 mugs::{0}".format(
+            self.scale._mostRecentLiftedTime.strftime("%H:%M")),
+            self.scale.getLedMessage()[1])
 
-        self.scale._currentWeight = 1164
-        with open("chuck_norris.txt") as f:
-            jokes = f.readlines()
-        jokes = [j.strip() for j in jokes]
-        self.assertTrue(self.scale.getLedMessage() in jokes)
-
-    def test_after60Minutes_DisplaysFunnyMessage(self):
-        """
-        - Hey, you want some coffee?
-        - Pick me up
-        - Coffee is more than One Hour Old
-        """
-        oneHourAgo = timedelta(hours = -1)
-        self.scale._mostRecentLiftedTime = datetime.now() + oneHourAgo
-        self.scale._currentWeight = 4000
-        self.assertEqual("Coffee is One hour Old", self.scale.getLedMessage())
-
-        self.scale._mostRecentLiftedTime = datetime.now() + (oneHourAgo * 2)
-        with open("chuck_norris.txt") as f:
-            jokes = f.readlines()
-        jokes = [j.strip() for j in jokes]
-        self.assertTrue(self.scale.getLedMessage() in jokes)
+        self.scale._currentWeight = 100
+        print(self.scale.getLedMessage())
+        self.assertTrue(self.scale.getLedMessage()[0] in self.scale._animations)
 
 
     @unittest.skip("Only run manually if testing Initial State Integration")

@@ -10,39 +10,43 @@ class SimpleSquare(SampleBase):
         offset_canvas = self.matrix.CreateFrameCanvas()
         print("{0} / {1}".format(offset_canvas.width, offset_canvas.height))
         print("{0} / {1}".format(self.matrix.width, self.matrix.height))
-        x, y = 7, 0
+        x, y = 0, 7
         start, end, direction = 0, 32, 1
         while True:
             self.usleep(50000)
 
             for j in range(0, offset_canvas.width):
-                if j == y - 2:
-                    offset_canvas.SetPixel(j, x, 55, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 55, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 55, 0, 0)
-                elif j == y - 1:
-                    offset_canvas.SetPixel(j, x, 155, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 155, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 155, 0, 0)
-                elif j == y: 
-                    offset_canvas.SetPixel(j, x, 255, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 255, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 255, 0, 0)
-                elif j == y + 1: 
-                    offset_canvas.SetPixel(j, x, 155, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 155, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 155, 0, 0)
-                elif j == y + 2: 
-                    offset_canvas.SetPixel(j, x, 55, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 55, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 55, 0, 0)
+                if j == x + direction * 4:
+                    offset_canvas.SetPixel(j, y, 255, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 255, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 255, 0, 0)
+                elif j == x + direction * 5:
+                    offset_canvas.SetPixel(j, y, 255, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 255, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 255, 0, 0)
+                if j == x + direction * 2:
+                    offset_canvas.SetPixel(j, y, 175, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 175, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 175, 0, 0)
+                elif j == x + direction * 3:
+                    offset_canvas.SetPixel(j, y, 155, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 155, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 155, 0, 0)
+                elif j == x + direction:
+                    offset_canvas.SetPixel(j, y, 55, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 55, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 55, 0, 0)
+                elif j == x: 
+                    offset_canvas.SetPixel(j, y, 25, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 25, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 25, 0, 0)
                 else:
-                    offset_canvas.SetPixel(j, x, 0, 0, 0)
-                    offset_canvas.SetPixel(j, x - 1, 0, 0, 0)
-                    offset_canvas.SetPixel(j, x + 1, 0, 0, 0)
+                    offset_canvas.SetPixel(j, y, 0, 0, 0)
+                    offset_canvas.SetPixel(j, y - 1, 0, 0, 0)
+                    offset_canvas.SetPixel(j, y + 1, 0, 0, 0)
 
-            y = y + direction
-            if y > end or y < start:
+            x = x + direction
+            if x > end or x < start:
                 direction = -direction
 
 

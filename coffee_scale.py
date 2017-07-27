@@ -9,14 +9,19 @@ from logging.handlers import TimedRotatingFileHandler
 import glob
 import shutil
 from ISStreamer.Streamer import Streamer
-import hipchat
 import math
 import requests
 import json
+import random
+import redis
+import select
+import signal
 
 
 class CoffeeScale:
     def __init__(self):
+        self._animations = ['mario.py', 'kit.py', 'scanning-pixel.py', 'rotating-block-generator.py',
+            'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py']
         self._logger = logging.getLogger("coffee_log")
         self._logger.setLevel(logging.INFO)
         self._currentWeight = 0
@@ -24,7 +29,7 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
-        self._logToLedLoopCount = 80
+        self._logToLedLoopCount = 60
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
@@ -44,6 +49,17 @@ class CoffeeScale:
                 "I hope you like Iced Coffee", "Nothing to see here, move along", "Sarah is watching, make more coffee",
                 "I wonder if we need more coffee?", "How is the weather today?", "Is it time for another fridge clean-out?",
                 "We never talk anymore Dave :("]
+        self._redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self._redisMessageQueue = ''
+
+    @property
+    def redisMessageQueue(self):
+        if not self._redisMessageQueue:
+            self._redisMessageQueue = os.environ.get('REDIS_ANIMATION_QUEUE')
+            if not self._redisMessageQueue:
+                self._logger.error('### Redis Animation Queue not set')
+
+        return self._redisMessageQueue
 
     @property
     def initialStateKey(self):
@@ -114,9 +130,12 @@ class CoffeeScale:
         handler = TimedRotatingFileHandler(logFile,
                 when="m", interval=rotateInterval, utc=True)
 
+        consoleHandler = logging.StreamHandler()
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
-        self._logger.addHandler(handler)
+        consoleHandler.setFormatter(formatter)
+        # self._logger.addHandler(handler)
+        self._logger.addHandler(consoleHandler)
 
     def shouldLogWeight(self, newReading):
         return abs(self._currentWeight - newReading) > self._weightChangedThreshold
@@ -153,12 +172,14 @@ class CoffeeScale:
 
         grams = -1
         try:
-            with open(dev, 'rb') as f:
+            with open(dev, 'r+b') as f:
                 # Read 4 unsigned integers from USB device
                 fmt = "IIII"
                 bytes_to_read = struct.calcsize(fmt)
-                usb_binary_read = struct.unpack(fmt, f.read(bytes_to_read))
-                grams = usb_binary_read[3]
+                r = f.read(bytes_to_read)
+                usb_binary_read = struct.unpack(fmt, r)
+                if len(usb_binary_read) == 4: 
+                    grams = usb_binary_read[3]
         except OSError as e:
             print("{0} - Failed to read from USB device".format(datetime.utcnow()))
         return grams
@@ -179,34 +200,40 @@ class CoffeeScale:
     def shouldPostToLed(self):
         return self._loopCount >= self._logToLedLoopCount
 
-    def getRandomEmptyMessage(self):
-        import random
+    def getRandomChuckNorris(self):
         chuck = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chuck_norris.txt")
         with open(chuck) as f:
             jokes = f.readlines()
 
         return random.sample(jokes, 1)[0].strip()
 
+    def getRandomEmptyMessage(self):
+        return random.sample(self._animations, 1)[0].strip()
+
     def getLedMessage(self):
         available_mugs = self.getAvailableMugs()
-        if available_mugs <= 1:
-            return self.getRandomEmptyMessage()
+        if available_mugs < 1:
+            return (self.getRandomEmptyMessage(), None)
 
-        oneHourAgo = datetime.now() + timedelta(hours = -1)
         twoHoursAgo = datetime.now() + timedelta(hours = -2)
 
         if self._mostRecentLiftedTime < twoHoursAgo:
-            return self.getRandomEmptyMessage()
-        elif self._mostRecentLiftedTime < oneHourAgo:
-            return "Coffee is One hour Old"
+            return (self.getRandomEmptyMessage(), None)
 
-        return "{0} mug{2} - {1}".format(available_mugs,
-                self._mostRecentLiftedTime.strftime("%a %H:%M"), 
+        args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
                 "" if available_mugs == 1 else "s")
+        return 'fixed-text.py', args
+
+    def postToLedRedis(self):
+        displayJson = {}
+        totalAvailableMugs = len(self._mugAmounts)
+        animation, args = self.getLedMessage()
+        displayJson['moduleName'] = animation
+        displayJson['args'] = args
+        self._redis.publish(self.redisMessageQueue, json.dumps(displayJson))
 
     def postToLed(self):
         displayJson = {}
-        totalAvailableMugs = len(self._mugAmounts)
         displayJson['text'] = self.getLedMessage()
 
         url = "{0}/display".format(self.ledServiceUrl)
@@ -255,34 +282,37 @@ class CoffeeScale:
         if response.status_code != 200:
             self._logger.error("Failed to post scale value to dynamo: {0}".format(response))
 
+    def handle_alarm(self, signum, frame):
+        raise Exception("signum: {0} - frame: {1}".format(signum, frame))
+
     def main(self):
         self._currentWeight = self.getWeightInGrams()
+        signal.signal(signal.SIGALRM, self.handle_alarm)
 
         while True:
             try:
                 self._loopCount += 1
+                signal.alarm(5)
                 tmpWeight = self.getWeightInGrams()
 
                 if self.shouldLogWeight(tmpWeight):
-                    self._logger.info(
-                            "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
+                    # self._logger.info( "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
-                    self.logToInitialState()
+                    # self.logToInitialState()
+                    self.postToLedRedis()
                     self.writeToDynamo()
 
                 if self.shouldPostToLed():
                     self._loopCount = 0
-                    self.postToLed()
+                    self.postToLedRedis()
 
                 if self.potIsLifted():
                     self._mostRecentLiftedTime = datetime.now()
 
             except Exception as e:
                 self._logger.error(e)
-
-            # if self.shouldPostToHipChat():
-            #     self._loopCount = 0
-            #     self.writeToHipChat()
+            finally:
+                signal.alarm(0)
 
             sleep(1)
 
