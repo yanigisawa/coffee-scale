@@ -20,7 +20,6 @@ pytz==2014.10
 pyzmq==14.5.0
 redis==2.10.5
 requests==2.7.0
-redis==2.10.5
 six==1.9.0
 sniffer==0.3.4
 tornado==4.1
