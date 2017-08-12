@@ -16,5 +16,6 @@
 # python mario.py --led-no-hardware-pulse 1 -r 16 
 # python gol-acorn.py --led-no-hardware-pulse 1 -r 16 
 # python gol-block-switch.py --led-no-hardware-pulse 1 -r 16 
-python gol-red-glider.py --led-no-hardware-pulse 1 -r 16 
+# python gol-red-glider.py --led-no-hardware-pulse 1 -r 16 
 # python gol-gosper-gun.py --led-no-hardware-pulse 1 -r 16 
+python spaceInvader.py --led-no-hardware-pulse 1 -r 16 
