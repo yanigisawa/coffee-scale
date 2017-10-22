@@ -31,16 +31,16 @@ class FixedText(SampleBase):
 
     def getProgressColor(self, percent):
         red = [255, 0, 0]
-        green = [0, 255, 0]
-        yellow = [255, 255, 0]
+        green = [0, 155, 50]
+        yellow = [155, 155, 0]
         blue = [0, 0, 255]
 
-        if percent <= 0.25:
+        if percent <= 0.34:
             return red
-        elif percent >= 0.25 and percent <= 0.5:
+        elif percent > 0.34 and percent <= 0.67:
             return yellow
-        elif percent > 0.5 and percent <= 0.75:
-            return blue
+        # elif percent > 0.5 and percent <= 0.75:
+        #     return blue
         else:
             return green
 
@@ -59,14 +59,14 @@ class FixedText(SampleBase):
             square_color.append(random.randint(0, 255))
             fill_color.append(random.randint(0, 255))
 
-        l1_color = graphics.Color(*tuple(line1_color))
+        l1_color = graphics.Color(*tuple([155, 155, 155]))
         l2_color = graphics.Color(*tuple(line2_color))
         line1, line2 = self.args.text.strip().split('::')
         graphics.DrawText(canvas, font, 0, 7, l1_color, line1)
 
         uw_percent = 0
         if self.args.united > 0:
-            s = graphics.Color(*tuple(square_color))
+            s = l1_color # graphics.Color(*tuple(square_color))
             f = graphics.Color(*tuple(fill_color))
             uw_percent = self.args.united
             self.drawPercentComplete(0, 8, 31, 15, s, uw_percent, f)
@@ -93,7 +93,8 @@ class FixedText(SampleBase):
                 canvas.SetPixel(i, j, *tuple(progress_color))
 
             i += 1
-            time.sleep(0.07)   
+            delay = 1.2 / fill
+            time.sleep(delay)   
 
 
 # Main function

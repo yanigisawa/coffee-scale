@@ -223,7 +223,7 @@ class CoffeeScale:
             return (self.getRandomEmptyMessage(), None)
 
         if self._showUnitedWayProgress:
-            percent = 91
+            percent = 25
             args = '-u {1} -t UW {0}%::'.format(percent, float(percent) / 100)
         else:
             args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
