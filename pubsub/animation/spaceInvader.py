@@ -2,6 +2,7 @@
 from samplebase import SampleBase
 import time
 import logging
+import random
 
 log = logging.getLogger()
 
@@ -12,6 +13,12 @@ class Pixel():
         self.red = args[2]
         self.green = args[3]
         self.blue = args[4]
+
+    def setRandomColor(self):
+        pass
+        # self.red = random.randint(0, 255)
+        # self.green = random.randint(0, 255)
+        # self.blue = random.randint(0, 255)
 
 class Invader(SampleBase):
     red = (155, 0, 0)
@@ -43,17 +50,21 @@ class Invader(SampleBase):
                 break
 
             self.clearScreen(0)
+            pixels = []
             if x % 2 == 0:
-                self.draw(self.getSmallInvaderPosition1(x, y, inverse))
-                self.draw(self.getMediumInvaderPosition1(x + 10, y, inverse))
-                self.draw(self.getLargeInvaderPosition1(x + 23, y, inverse))
-                self.draw(self.getPlayerShip(playerX, y + 10, inverse))
+                pixels.extend(self.getSmallInvaderPosition1(x, y, inverse))
+                pixels.extend(self.getMediumInvaderPosition1(x + 10, y, inverse))
+                pixels.extend(self.getLargeInvaderPosition1(x + 23, y, inverse))
+                pixels.extend(self.getPlayerShip(playerX, y + 10, inverse))
             else:
-                self.draw(self.getSmallInvaderPosition2(x, y + 1, inverse))
-                self.draw(self.getMediumInvaderPosition2(x + 10, y + 1, inverse))
-                self.draw(self.getLargeInvaderPosition2(x + 23, y + 1, inverse))
-                self.draw(self.getPlayerShip(playerX, y + 10, inverse))
+                pixels.extend(self.getSmallInvaderPosition2(x, y + 1, inverse))
+                pixels.extend(self.getMediumInvaderPosition2(x + 10, y + 1, inverse))
+                pixels.extend(self.getLargeInvaderPosition2(x + 23, y + 1, inverse))
+                pixels.extend(self.getPlayerShip(playerX, y + 10, inverse))
 
+            for p in pixels:
+                p.setRandomColor()
+            self.draw(pixels)
             x += step
             if x > 32:
                 x = -30
