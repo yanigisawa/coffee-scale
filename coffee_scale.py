@@ -21,7 +21,8 @@ import signal
 class CoffeeScale:
     def __init__(self):
         self._animations = ['mario.py', 'kit.py', 'scanning-pixel.py', 'rotating-block-generator.py',
-            'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py']
+            'gol-acorn.py', 'gol-block-switch.py', 'gol-gosper-gun.py', 'gol-pent.py', 'gol-red-glider.py',
+            'spaceInvader.py']
         self._logger = logging.getLogger("coffee_log")
         self._logger.setLevel(logging.INFO)
         self._currentWeight = 0
