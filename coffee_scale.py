@@ -29,7 +29,8 @@ class CoffeeScale:
         self._emptyPotThreshold = 10
         self._loopCount = 0
         self._logToHipChatLoopCount = 40
-        self._logToLedLoopCount = 60
+        self._logToLedLoopCount = 30
+        self._showUnitedWayProgress = False
         self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
@@ -220,8 +221,14 @@ class CoffeeScale:
         if self._mostRecentLiftedTime < twoHoursAgo:
             return (self.getRandomEmptyMessage(), None)
 
-        args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
-                "" if available_mugs == 1 else "s")
+        if self._showUnitedWayProgress:
+            percent = 91
+            args = '-u {1} -t UW {0}%::'.format(percent, float(percent) / 100)
+        else:
+            args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
+                    "" if available_mugs == 1 else "s")
+
+        self._showUnitedWayProgress = not self._showUnitedWayProgress
         return 'fixed-text.py', args
 
     def postToLedRedis(self):
@@ -288,6 +295,7 @@ class CoffeeScale:
     def main(self):
         self._currentWeight = self.getWeightInGrams()
         signal.signal(signal.SIGALRM, self.handle_alarm)
+        self._loopCount = 29
 
         while True:
             try:

@@ -20,10 +20,11 @@ class Listener(threading.Thread):
         data = json.loads(item['data'])
         args = None
         className = '{0}'.format(data['moduleName'])
-        path = os.path.abspath('animation/{}'.format(className))
+        path = os.path.abspath('pubsub/animation/{}'.format(className))
         process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16', '--led-pwm-lsb-nanoseconds', '300']
         if 'args' in data.keys() and data['args']:
-            process.append(data['args'])
+            a = ['-{0}'.format(y) for y in data['args'].split('-') if y]
+            process.extend(a)
 
         log.debug('Running {0}'.format(process))
         p = Popen(process)
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     console = logging.StreamHandler()
     log = logging.getLogger()
     log.addHandler(console)
-    # log.setLevel(logging.DEBUG)
+    log.setLevel(logging.DEBUG)
     queue = os.environ.get('REDIS_ANIMATION_QUEUE')
     client = Listener(redis.Redis(), [queue])
     client.start()
