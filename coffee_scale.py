@@ -222,14 +222,18 @@ class CoffeeScale:
         if self._mostRecentLiftedTime < twoHoursAgo:
             return (self.getRandomEmptyMessage(), None)
 
-        if self._showUnitedWayProgress:
-            percent = 25
-            args = '-u {1} -t UW {0}%::'.format(percent, float(percent) / 100)
-        else:
-            args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
-                    "" if available_mugs == 1 else "s")
+        # if self._showUnitedWayProgress:
+        #     percent = 25
+        #     args = '-u {1} -t UW {0}%::'.format(percent, float(percent) / 100)
+        # else:
+        #     args = "-t {0} mug{2}::{1}".format(available_mugs, self._mostRecentLiftedTime.strftime("%H:%M"), 
+        #             "" if available_mugs == 1 else "s")
+        percent = float(available_mugs) / 5
+        if percent > 1:
+            percent = 1
+        args = "-u {2} -t {0} mug{1}::".format(available_mugs, "" if available_mugs == 1 else "s", percent)
+            
 
-        self._showUnitedWayProgress = not self._showUnitedWayProgress
         return 'fixed-text.py', args
 
     def postToLedRedis(self):
