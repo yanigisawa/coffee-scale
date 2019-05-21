@@ -24,3 +24,4 @@ sniffer==0.3.4
 tornado==4.1
 vincent==0.4.4
 wsgiref==0.1.2
+anvil-uplink==0.3.20
