@@ -17,6 +17,9 @@ import redis
 import select
 import signal
 
+import anvil.server
+
+anvil.server.connect(os.environ.get('ANVIL_SERVER_KEY'))
 
 class CoffeeScale:
     def __init__(self):
@@ -332,4 +335,12 @@ class CoffeeScale:
 if __name__ == "__main__":
     scale = CoffeeScale()
     scale.configureLogFile()
+
+    @anvil.server.callable
+    def get_mug_count():
+        return scale.getAvailableMugs()
+
     scale.main()
+
+
+

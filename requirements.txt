@@ -1,5 +1,5 @@
 ISStreamer==0.0.25
-Jinja2==2.7.3
+Jinja2==2.10.1
 # MacFSEvents==0.4
 MarkupSafe==0.23
 backports.ssl-match-hostname==3.4.0.2
@@ -19,7 +19,7 @@ python-termstyle==0.1.10
 pytz==2014.10
 pyzmq==14.5.0
 redis==2.10.5
-requests==2.7.0
+requests==2.20.0
 six==1.9.0
 sniffer==0.3.4
 tornado==4.1
