@@ -21,7 +21,6 @@ ply==3.4
 pyOpenSSL==0.14
 pyasn1==0.1.7
 pycparser==2.10
-python-apt==0.9.3.12
 redis==2.10.5
 requests==2.22.0
 rgbmatrix==0.0.1
