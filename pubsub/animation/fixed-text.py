@@ -47,7 +47,7 @@ class FixedText(SampleBase):
     def run(self):
         canvas = self.matrix
         font = graphics.Font()
-        font.LoadFont("/home/pi/src/coffee-scale/pubsub/animation/fonts/5x7.bdf")
+        font.LoadFont("/home/pi/src/coffee_scale/pubsub/animation/fonts/5x7.bdf")
 
         line1_color = []
         line2_color = []

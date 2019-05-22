@@ -20,8 +20,8 @@ class Listener(threading.Thread):
         data = json.loads(item['data'])
         args = None
         className = '{0}'.format(data['moduleName'])
-        path = os.path.abspath('pubsub/animation/{}'.format(className))
-        process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16', '--led-pwm-lsb-nanoseconds', '300']
+        path = os.path.abspath('animation/{}'.format(className))
+        process = ['python', path, '--led-no-hardware-pulse', '1', '-r', '16', '--led-pwm-lsb-nanoseconds', '300', '--led-gpio-mapping', 'adafruit-hat']
         if 'args' in data.keys() and data['args']:
             a = ['-{0}'.format(y) for y in data['args'].split('-') if y]
             process.extend(a)

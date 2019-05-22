@@ -5,13 +5,13 @@
 # python pulsing-colors.py --led-no-hardware-pulse 1 -r 16
 # python pulsing-brightness.py --led-no-hardware-pulse 1 -r 16
 # 
-python graphics.py --led-no-hardware-pulse 1 -r 16
+# python graphics.py --led-no-hardware-pulse 1 -r 16 --led-gpio-mapping=adafruit-hat
 # python grayscale-block.py --led-no-hardware-pulse 1 -r 16
 # 
 # python image-draw.py --led-no-hardware-pulse -r 16
 # python image-scroller.py --led-no-hardware-pulse 1 -r 16
 # python rotating-block-generator.py --led-no-hardware-pulse 1 -r 16 
-# python simple-square.py --led-no-hardware-pulse 1 -r 16 
+# python simple-square.py --led-no-hardware-pulse 1 -r 16  --led-gpio-mapping=adafruit-hat
 # python kit.py --led-no-hardware-pulse 1 -r 16 
 # python mario.py --led-no-hardware-pulse 1 -r 16 
 # python gol-acorn.py --led-no-hardware-pulse 1 -r 16 
@@ -19,7 +19,8 @@ python graphics.py --led-no-hardware-pulse 1 -r 16
 # python gol-red-glider.py --led-no-hardware-pulse 1 -r 16 
 # python gol-gosper-gun.py --led-no-hardware-pulse 1 -r 16 
 # python spaceInvader.py --led-no-hardware-pulse 1 -r 16 
-# python fixed-text.py --led-no-hardware-pulse 1 -r 16  -t "United Way::25%"
+# python fixed-text.py --led-no-hardware-pulse 1 -r 16  -t "United Way::25%" --led-gpio-mapping=adafruit-hat
+python fixed-text.py --led-no-hardware-pulse 1 -r 16 --led-gpio-mapping=adafruit-hat -u 50 -t "4 mugs::"
 
 
 # python bcd_clock.py --led-no-hardware-pulse 1 -r 16 
