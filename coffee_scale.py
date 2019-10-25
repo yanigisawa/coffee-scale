@@ -34,10 +34,8 @@ class CoffeeScale:
         self._logToHipChatLoopCount = 40
         self._logToLedLoopCount = 30
         self._showUnitedWayProgress = False
-        self._initialStateKey = ''
         self._environment = ''
         self._hipchatKey = ''
-        self._ledServiceUrl = ''
         self._mostRecentLiftedTime = datetime.now()
         self._dynamoApiKey = ''
         self._dynamoApiUrl = ''
@@ -66,15 +64,6 @@ class CoffeeScale:
         return self._redisMessageQueue
 
     @property
-    def initialStateKey(self):
-        if not self._initialStateKey:
-            self._initialStateKey = os.environ.get('INITIAL_STATE_ACCESS_KEY')
-            if not self._initialStateKey:
-                self._logger.error("### Initial State Key not set in environment variable")
-
-        return self._initialStateKey
-
-    @property
     def environment(self):
         if not self._environment:
             self._environment = os.environ.get("ENVIRONMENT")
@@ -91,15 +80,6 @@ class CoffeeScale:
                 self._logger.error('### Hipchat API Key missing from environment variable HIPCHAT_KEY')
 
         return self._hipchatKey
-
-    @property
-    def ledServiceUrl(self):
-        if not self._ledServiceUrl:
-            self._ledServiceUrl = os.environ.get('LED_SERVICE_URL')
-            if not self._ledServiceUrl:
-                self._logger.error('### LED_SERVICE_URL environment variable has not been set') 
-
-        return self._ledServiceUrl
 
     @property
     def dynamoApiKey(self):
@@ -246,27 +226,6 @@ class CoffeeScale:
         displayJson['args'] = args
         self._redis.publish(self.redisMessageQueue, json.dumps(displayJson))
 
-    def postToLed(self):
-        displayJson = {}
-        displayJson['text'] = self.getLedMessage()
-
-        url = "{0}/display".format(self.ledServiceUrl)
-        payload = json.dumps(displayJson)
-        headers = {'content-type': 'application/json'}
-
-        response = requests.post(url, data=payload, headers=headers, timeout=5)
-
-    def logToInitialState(self):
-        utcnow = datetime.utcnow()
-        bucketKey = "{0} - coffee_scale_data".format(self.environment)
-
-        streamer = Streamer(bucket_name="{0} - Coffee Scale Data".format(self.environment), 
-                bucket_key=bucketKey, access_key=self.initialStateKey)
-
-        if self.potIsLifted():
-            streamer.log("Coffee Pot Lifted", True)
-        streamer.log("Coffee Weight", self._currentWeight)
-        streamer.close()
 
     def writeToHipChat(self):
         hipster = hipchat.HipChat(token=self.hipchatKey)
@@ -313,7 +272,6 @@ class CoffeeScale:
                 if self.shouldLogWeight(tmpWeight):
                     # self._logger.info( "{0},{1}".format(datetime.utcnow().strftime("%Y-%m-%dT%X"), tmpWeight))
                     self._currentWeight = tmpWeight
-                    # self.logToInitialState()
                     self.postToLedRedis()
                     self.writeToDynamo()
 
