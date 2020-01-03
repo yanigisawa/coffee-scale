@@ -79,9 +79,7 @@ class CoffeeTest(unittest.TestCase):
             params['message'])
 
     def test_environmentVariables_AreSet(self):
-        self.assertTrue(self.scale.initialStateKey)
         self.assertTrue(self.scale.environment)
-        self.assertTrue(self.scale.ledServiceUrl)
         self.assertTrue(self.scale.redisMessageQueue)
 
     def test_ledMessage_containsOnlyMugsRemaining(self):
@@ -93,14 +91,6 @@ class CoffeeTest(unittest.TestCase):
         self.scale._currentWeight = 100
         print(self.scale.getLedMessage())
         self.assertTrue(self.scale.getLedMessage()[0] in self.scale._animations)
-
-
-    @unittest.skip("Only run manually if testing Initial State Integration")
-    def test_InitialStateIntegration(self):
-        for j in range(5):
-            for i in range(5, 30, 2):
-                self.scale._currentWeight = i
-                self.scale.logToInitialState()
 
 def main():
     unittest.main()

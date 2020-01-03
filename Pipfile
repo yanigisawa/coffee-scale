@@ -1,0 +1,39 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+certifi = "==14.05.14"
+colorama = "==0.3.3"
+docutils = "==0.12"
+gnureadline = "==6.3.3"
+ipython = "==2.4.1"
+lockfile = "==0.10.2"
+nose = "==1.3.4"
+numpy = "==1.9.1"
+pandas = "==0.15.2"
+python-daemon = "==2.0.5"
+python-dateutil = "==2.4.0"
+python-simple-hipchat = "==0.3.3"
+python-termstyle = "==0.1.10"
+pytz = "==2014.10"
+pyzmq = "==14.5.0"
+redis = "==2.10.5"
+requests = "==2.7.0"
+six = "==1.9.0"
+sniffer = "==0.3.4"
+tornado = "==4.1"
+vincent = "==0.4.4"
+wsgiref = "==0.1.2"
+ISStreamer = "==0.0.25"
+Jinja2 = "==2.7.3"
+MarkupSafe = "==0.23"
+"backports.ssl_match_hostname" = "==3.4.0.2"
+pyinotify = "*"
+anvil-uplink = "*"
+
+[requires]
+python_version = "2.7"
