@@ -332,7 +332,10 @@ class CoffeeScale:
             sleep(1)
 
 if __name__ == "__main__":
-    anvil.server.connect(os.environ.get('ANVIL_SERVER_KEY'))
+    try:
+        anvil.server.connect(os.environ.get('ANVIL_SERVER_KEY'))
+    except:
+        pass
     scale = CoffeeScale()
     scale.configureLogFile()
 
