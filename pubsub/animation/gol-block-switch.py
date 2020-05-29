@@ -2,7 +2,7 @@
 from golbase import GameOfLifeBase, Cell
 import random
 import time
-
+import logging
 
 class GameOfLifeBlockSwitch(GameOfLifeBase):
     def __init__(self, *args, **kwargs):
@@ -13,24 +13,27 @@ class GameOfLifeBlockSwitch(GameOfLifeBase):
     def run(self):
         self.initializeCells()
             
-        y = 0
-        self.cells[11][y + 6].alive = True
-        self.cells[13][y + 6].alive = True
-        self.cells[13][y + 5].alive = True
-        self.cells[15][y + 4].alive = True
-        self.cells[15][y + 3].alive = True
-        self.cells[15][y + 2].alive = True
-        self.cells[17][y + 3].alive = True
-        self.cells[17][y + 2].alive = True
-        self.cells[17][y + 1].alive = True
-        self.cells[18][y + 2].alive = True
+        y = 15 
+        x = 8
+        self.cells[x + 11][y + 6].alive = True
+        self.cells[x + 13][y + 6].alive = True
+        self.cells[x + 13][y + 5].alive = True
+        self.cells[x + 15][y + 4].alive = True
+        self.cells[x + 15][y + 3].alive = True
+        self.cells[x + 15][y + 2].alive = True
+        self.cells[x + 17][y + 3].alive = True
+        self.cells[x + 17][y + 2].alive = True
+        self.cells[x + 17][y + 1].alive = True
+        self.cells[x + 18][y + 2].alive = True
 
+        ms_delay = 0.5313076904003437
+        print("delay = {0}".format(ms_delay))
         while True:
 
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(0.3)
+            time.sleep(ms_delay)
             self.evolve()
 
 

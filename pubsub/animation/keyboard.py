@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 import curses
+import random
 import os
 from samplebase import SampleBase
 from threading import Thread, Lock
+from golbase import GameOfLifeBase, Cell
 
-COLUMNS = ['123456qwertyuiopasdfghjklzxcvbnm!@#$%^QWERTYUIOPASDFGHJKLZXCVBNM']
+COLUMNS = 'qwertyuiopasdfgh'
 
 
-class KeyboardInput(SampleBase):
+class KeyboardInput(GameOfLifeBase):
     def __init__(self, *args, **kwargs):
         super(KeyboardInput, self).__init__(*args, **kwargs)
         self.animate = False
         self.lock = Lock()
         self.configure_args()
-        self.canvas = self.matrix.CreateFrameCanvas()
-        self.animate_thread = None
+        # self.canvas = self.matrix.CreateFrameCanvas()
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
 
     def stop(self):
         self.animate = False
@@ -30,48 +33,55 @@ class KeyboardInput(SampleBase):
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-    def run(self, key="k"):
+    def get_color(self):
+        rgb = []
+        for i in range(3):
+            rgb.append(random.randint(0, 255))
+
+        return tuple(rgb)
+
+    def run_rows(self, key="k"):
         self.win.addstr("{0} / {1} - {2}".format(self.canvas.width, self.canvas.height, key))
-        x, y = 0, 7
-        start, end, direction = 0, 32, 1
-        while self.animate:
-            self.usleep(50000)
+        if key not in COLUMNS:
+            return
 
-            for j in range(0, self.canvas.width):
-                if j == x + direction * 4:
-                    self.canvas.SetPixel(j, y, 255, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 255, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 255, 0, 0)
-                elif j == x + direction * 5:
-                    self.canvas.SetPixel(j, y, 255, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 255, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 255, 0, 0)
-                if j == x + direction * 2:
-                    self.canvas.SetPixel(j, y, 175, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 175, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 175, 0, 0)
-                elif j == x + direction * 3:
-                    self.canvas.SetPixel(j, y, 155, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 155, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 155, 0, 0)
-                elif j == x + direction:
-                    self.canvas.SetPixel(j, y, 55, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 55, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 55, 0, 0)
-                elif j == x: 
-                    self.canvas.SetPixel(j, y, 25, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 25, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 25, 0, 0)
-                else:
-                    self.canvas.SetPixel(j, y, 0, 0, 0)
-                    self.canvas.SetPixel(j, y - 1, 0, 0, 0)
-                    self.canvas.SetPixel(j, y + 1, 0, 0, 0)
+        self.clear_screen()
+        row = COLUMNS.find(key) * 2
+        for column in range(self.canvas.width):
+            color = self.get_color()
+            self.canvas.SetPixel(column, row, *self.get_color())
+            self.canvas.SetPixel(column, row + 1, *self.get_color())
 
-            x = x + direction
-            if x > end or x < start:
-                direction = -direction
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
+    def run_both(self, key="k"):
+        self.win.addstr("{0} / {1} - {2}".format(self.canvas.width, self.canvas.height, key))
+        if key not in COLUMNS:
+            return
+
+        self.clear_screen()
+        row = COLUMNS[::-1].find(key) * 2
+        for column in range(32):
+            color = self.get_color()
+            self.canvas.SetPixel(column, row, *self.get_color())
+            self.canvas.SetPixel(column, row + 1, *self.get_color())
+
+        column = 32 + (COLUMNS.find(key) * 2)
+        for row in range(32):
+            color = self.get_color()
+            self.canvas.SetPixel(column, row, *self.get_color())
+            self.canvas.SetPixel(column + 1, row, *self.get_color())
+
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+    def run(self, key=""):
+        self.win.addstr("Called Run")
+        self.drawCells()
+        self.evolve()
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+
+
 
 
     def main(self, win):
@@ -85,26 +95,22 @@ class KeyboardInput(SampleBase):
             try:
                 key = win.getkey()
                 win.clear()
-                win.addstr("Detected key:")
                 win.addstr(str(key))
-                win.addstr("\nTruthy: {0}".format(str(key) == True))
                 if key == os.linesep:
-                    win.addstr("Detected S - Stop Animate")
                     self.stop()
                     break
-                win.addstr("\n{0}".format(key))
                 key = str(key)
-                win.addstr("\n{0}".format(key))
+                self.win.addstr("Before checking KEY - run")
                 if key:
-                    win.addstr("\nbegin thread")
-                    with self.lock:
-                        if self.animate:
-                            self.stop()
-                        self.animate = True
-                    win.addstr("\nbegin thread")
-                    self.animate_thread = Thread(target=self.run, args=(key))
-                    self.animate_thread.start()
-                    prev_key = key
+                    self.win.addstr("Calling run")
+                    self.run()
+                    # with self.lock:
+                    #     if self.animate:
+                    #         self.stop()
+                    #     self.animate = True
+                    # self.animate_thread = Thread(target=self.run, args=(key))
+                    # self.animate_thread.start()
+                    # prev_key = key
             except Exception as e:
                 # No input
                 pass

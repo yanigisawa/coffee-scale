@@ -2,6 +2,7 @@
 from samplebase import SampleBase
 import time
 import logging
+import random
 
 log = logging.getLogger()
 
@@ -25,15 +26,16 @@ class Mario(SampleBase):
         super(Mario, self).__init__(*args, **kwargs)
 
     def clearScreen(self, x = 0):
-        minx = max(x - 4, 0)
-        maxX = min(x + 16, 64)
+        minx = 0
+        maxX = 64
         for i in range(minx, maxX):
-            for j in range(0, 16):
+            for j in range(0, 32):
                 self.canvas.SetPixel(i, j, 0, 0, 0)
 
     def run(self):
-        x, y, step = 0, 0, 1
+        x, y, step = -3, 0, 1
         count = 0
+        width = 10
         self.canvas = self.matrix.CreateFrameCanvas()
         inverse = False
         while True:
@@ -41,39 +43,78 @@ class Mario(SampleBase):
                 log.info('Halting Mario')
                 break
 
+            possible_params = [
+                (x + 5, y, inverse),
+                (x + 5, y + 16, not inverse),
+                (x + 23, y, inverse),
+                (x + 23, y + 16, not inverse)
+            ]
             self.clearScreen(x)
-            count += 1
-            if count == 6:
-                count = 2
 
-            if count == 1:
-                self.draw(self.getRun1(x, y, inverse))
-            elif count == 2:
-                self.draw(self.getRun2(x, y, inverse))
-            elif count == 3:
-                self.draw(self.getRun3(x, y, inverse))
-            elif count == 4:
-                self.draw(self.getRun4(x, y, inverse))
-            elif count == 5:
-                self.draw(self.getRun5(x, y, inverse))
-            else:
-                count = 0
-                
+            self.draw_hat(width, y)
 
-            # if count % 2 == 0:
-            #     self.draw(self.getStanding(x, y, inverse))
-            # else:
-            #     # self.draw(self.getStanding(x, y, inverse))
-                self.draw(self.getJumping(x, y, inverse))
+            methods = [
+                self.getRun1,
+                self.getRun2,
+                self.getRun3,
+                self.getRun4,
+                self.getRun5,
+                self.getJumping,
+                self.getStanding
+            ]
+            mario_count = random.randint(1,4)
+            inverse = random.choice([True, False])
+            for i in range(mario_count):
+                args = random.choice(possible_params)
+                possible_params.remove(args)
+                m = random.choice(methods)
+                self.draw(m(*args))
 
-            # time.sleep(0.2)
-            time.sleep(0.6009999983238451)
-            x += step
-            if x > 65 or x < -14:
-                step *= -1
-                inverse = not inverse
+
+            # self.draw(self.getStanding(x + 32, y, inverse))
+
+            # self.draw(self.getJumping(x + 32, y + 16, inverse))
+
+            # self.draw(self.getJumping(x + 50, y, not inverse))
+
+            # self.draw(self.getStanding(x + 50, y + 16, not inverse))
+
+
+
+            time.sleep(0.5)
+            # time.sleep(0.6009999983238451)
+            # x += step
+            # if x > 65 or x < -14:
+            #     step *= -1
+            inverse = not inverse
 
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+    def draw_hat(self, width, y):
+        x = 50
+        for i in range(x, width + x):
+            self.canvas.SetPixel(i, y, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 1, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 2, 255, 0, 0)
+
+            self.canvas.SetPixel(i, y + 3, 255, 255, 255)
+            self.canvas.SetPixel(i, y + 4, 255, 255, 255)
+            self.canvas.SetPixel(i, y + 5, 255, 255, 255)
+
+            self.canvas.SetPixel(i, y + 6, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 7, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 8, 255, 0, 0)
+
+            self.canvas.SetPixel(i, y + 9, 255, 255, 255)
+            self.canvas.SetPixel(i, y + 10, 255, 255, 255)
+            self.canvas.SetPixel(i, y + 11, 255, 255, 255)
+
+            self.canvas.SetPixel(i, y + 12, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 13, 255, 0, 0)
+            self.canvas.SetPixel(i, y + 14, 255, 0, 0)
+
+        for i in range(x - 2, x + 2 + width):
+            self.canvas.SetPixel(i, y + 15, 255, 255, 255)
 
     def draw(self, pixels):
         for p in pixels:
@@ -226,7 +267,7 @@ class Mario(SampleBase):
         # Standing Mario is 12 pixels wide. With 6 as the mid-point
         # flip all pixels around the 6 pixel mark to turn him around
         if inverse:
-            left = x 
+            left = x
             right = left + 12
             mid = left + 6
             for p in pixels:
@@ -403,7 +444,7 @@ class Mario(SampleBase):
         # Standing Mario is 12 pixels wide. With 6 as the mid-point
         # flip all pixels around the 6 pixel mark to turn him around
         if inverse:
-            left = x 
+            left = x
             right = left + 12
             mid = left + 6
             for p in pixels:
@@ -608,7 +649,7 @@ class Mario(SampleBase):
         # Standing Mario is 12 pixels wide. With 6 as the mid-point
         # flip all pixels around the 6 pixel mark to turn him around
         if inverse:
-            left = x 
+            left = x
             right = left + 12
             mid = left + 6
             for p in pixels:
@@ -1001,7 +1042,7 @@ class Mario(SampleBase):
         # Standing Mario is 12 pixels wide. With 6 as the mid-point
         # flip all pixels around the 6 pixel mark to turn him around
         if inverse:
-            left = x 
+            left = x
             right = left + 12
             mid = left + 6
             for p in pixels:
@@ -1013,7 +1054,7 @@ class Mario(SampleBase):
                     p.x = p.x - distance * 2
 
         return pixels
-            
+
 
 
 # Main function

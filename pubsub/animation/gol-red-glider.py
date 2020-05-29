@@ -18,18 +18,21 @@ class GameOfLifeGlider(GameOfLifeBase):
     def run(self):
         self.initializeCells()
             
-        self.makeGlider(0, 0)
-        self.makeGlider(5, 6)
+        for i in range(0, 60, 5):
+            for j in range(0, 27, 5):
+                self.makeGlider(i, j)
+        # self.makeGlider(0, 0)
+        # self.makeGlider(5, 6)
         # self.makeGlider(5, 0)
-        self.makeGlider(10, 0)
+        # self.makeGlider(10, 0)
         # self.makeGlider(16, 0)
-        self.makeGlider(21, 0)
+        # self.makeGlider(21, 0)
         # self.makeGlider(26, 0)
         # self.makeGlider(0, 6)
         # self.makeGlider(10, 6)
-        self.makeGlider(16, 6)
+        # self.makeGlider(16, 6)
         # self.makeGlider(21, 6)
-        self.makeGlider(26, 6)
+        # self.makeGlider(26, 6)
 
         # self.makeGlider(0, 11)
         # self.makeGlider(5, 11)
@@ -43,7 +46,7 @@ class GameOfLifeGlider(GameOfLifeBase):
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(0.2)
+            time.sleep(0.465111)
             self.evolve()
 
 

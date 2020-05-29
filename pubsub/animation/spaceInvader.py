@@ -34,17 +34,17 @@ class Invader(SampleBase):
 
     def clearScreen(self, x = 0):
         minx = 0 # max(x - 4, 0)
-        maxX = 32 # min(x + 16, 32)
+        maxX = 64 # min(x + 16, 32)
         for i in range(minx, maxX):
             for j in range(0, 16):
                 self.canvas.SetPixel(i, j, 0, 0, 0)
 
     def run(self):
-        playerX, x, y, step, playerStep = 32, -30, 0, 1, -1
+        playerX, x, y, step, playerStep = 50, -5, 0, 1, -1
         self.canvas = self.matrix.CreateFrameCanvas()
         inverse = False
         while True:
-            time.sleep(0.5)
+            time.sleep(0.4126571450914656)
             if self._halt and self._halt.isSet():
                 log.info('Halting Invader')
                 break
