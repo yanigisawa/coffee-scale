@@ -35,7 +35,7 @@ class GameOfLifeAtom(GameOfLifeBase):
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(0.1) # 3643529415130615)
+            time.sleep(0.3643529415130615)
             self.evolve()
 
 

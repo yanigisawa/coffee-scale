@@ -21,7 +21,7 @@ class Cell(object):
         return '{0}:{1}'.format(self.x, self.y)
 
     def getColor(self):
-        if not self.alive: 
+        if not self.alive:
             return (0, 0, 0)
 
         rgb = []
@@ -35,6 +35,7 @@ class GameOfLifeBase(SampleBase):
     toroidal = True
     _initialState = None
     _evolutionQueue = []
+    _lights_per_evolution = []
 
     def __init__(self, *args, **kwargs):
         super(GameOfLifeBase, self).__init__(*args, **kwargs)
@@ -100,16 +101,20 @@ class GameOfLifeBase(SampleBase):
         return aliveCells
 
     def isRepeatingPattern(self):
-        if len(self._evolutionQueue) > 30:
-            self._evolutionQueue.pop(0)
-        elif self._initialState == None:
-            self._initialState = self.encode()
+        if len(self._evolutionQueue) < 10:
+            return False
 
-        self._evolutionQueue.append(self.encode())
+        if len(set(self._evolutionQueue[-10:])) < 10:
+            return True
 
-        # print('queueLength {0} - SetLength {1}'.format(len(self._evolutionQueue), len(set(self._evolutionQueue))))
-        # print(self._evolutionQueue)
-        return len(set(self._evolutionQueue)) < 5 and len(self._evolutionQueue) > 10
+        alive_cell_counts = [len(s.split(";")) for s in self._evolutionQueue]
+        if len(set(alive_cell_counts)) == 1:
+            return True
+
+        if len(set(alive_cell_counts)) == 2:
+            return True
+        return False
+
 
     def reset(self):
         self.initializeCells()
@@ -120,7 +125,7 @@ class GameOfLifeBase(SampleBase):
                 x, y = c.split(':')
                 self.cells[int(x)][int(y)].alive = True
 
-    def evolve(self):
+    def calculate_lives(self):
         """
         Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
         Any live cell with two or three live neighbours lives on to the next generation.
@@ -130,9 +135,6 @@ class GameOfLifeBase(SampleBase):
         # for each cell, count # of neighbors
         # if less than 2 or more than 3, cell dies
         # if dead and has 3 neighbors, cell becomes alive
-
-        if self.isRepeatingPattern():
-            self.reset()
 
         for row in self.cells:
             for c in row:
@@ -144,6 +146,21 @@ class GameOfLifeBase(SampleBase):
                     c.alive = False
                 elif c.neighborCount == 3:
                     c.alive = True
+
+    def evolve(self):
+        if len(self._evolutionQueue) > 300:
+            self._evolutionQueue.pop(0)
+        elif self._initialState == None:
+            self._initialState = self.encode()
+
+        encoded_state = self.encode()
+        self._evolutionQueue.append(encoded_state)
+        self._lights_per_evolution.append(len(encoded_state.split(";")))
+
+        if self.isRepeatingPattern():
+            self.reset()
+
+        self.calculate_lives()
         return self.cells
 
-        
+
