@@ -27,7 +27,9 @@ class GameOfLifeRandom(GameOfLifeBase):
         # self.set_manual_config()
         # return
 
-        active_cells = random.randint(10, self.matrix.width * self.matrix.height)
+        self.initializeCells()
+        # active_cells = random.randint(10, self.matrix.width * self.matrix.height)
+        active_cells = random.randint(10, 200)
         for _ in range(active_cells):
             x = random.randint(0, self.matrix.width -1)
             y = random.randint(0, self.matrix.height - 1)
@@ -69,21 +71,19 @@ class GameOfLifeRandom(GameOfLifeBase):
 
         self.get_random_config()
 
-        ms_delay = 0.01
+        ms_delay = 1 # 0.01
         print("delay = {0}".format(ms_delay))
         while True:
 
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            # time.sleep(ms_delay)
-            self.evolve()
-            self.generations += 1
-            # if self.generations > 100:
-            #     x = raw_input('press enter')
-            if self.generations % 1000 == 0:
-                # x = raw_input('press enter')
-                self.save_gol_iteration()
+            time.sleep(random.randint(1, 5))
+            self.get_random_config()
+            # self.evolve()
+            # self.generations += 1
+            # if self.generations % 1000 == 0:
+            #     self.save_gol_iteration()
 
 
 
