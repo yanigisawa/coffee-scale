@@ -66,7 +66,7 @@ class Invader(SampleBase):
                 p.setRandomColor()
             self.draw(pixels)
             x += step
-            if x > 32:
+            if x > self.canvas.width:
                 x = -30
 
             playerX += playerStep

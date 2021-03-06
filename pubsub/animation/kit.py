@@ -11,7 +11,7 @@ class SimpleSquare(SampleBase):
         print("{0} / {1}".format(offset_canvas.width, offset_canvas.height))
         print("{0} / {1}".format(self.matrix.width, self.matrix.height))
         x, y = 0, 7
-        start, end, direction = 0, 32, 1
+        start, end, direction = 0, offset_canvas.width, 1
         while True:
             self.usleep(50000)
 

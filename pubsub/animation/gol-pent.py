@@ -12,7 +12,7 @@ class GameOfLifePent(GameOfLifeBase):
     def run(self):
         self.initializeCells()
             
-        x, y = 5, 3
+        x, y = 15, 3
         self.cells[x + 3][y + 4].alive = True
         self.cells[x + 3][y + 5].alive = True
         self.cells[x + 3][y + 6].alive = True

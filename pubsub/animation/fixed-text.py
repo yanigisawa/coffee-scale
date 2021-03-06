@@ -47,7 +47,7 @@ class FixedText(SampleBase):
     def run(self):
         canvas = self.matrix
         font = graphics.Font()
-        font.LoadFont("/home/pi/src/coffee-scale/pubsub/animation/fonts/5x7.bdf")
+        font.LoadFont("/home/pi/src/coffee-scale/pubsub/animation/fonts/7x13.bdf")
 
         line1_color = []
         line2_color = []
@@ -62,7 +62,7 @@ class FixedText(SampleBase):
         l1_color = graphics.Color(*tuple([155, 155, 155]))
         l2_color = graphics.Color(*tuple(line2_color))
         line1, line2 = self.args.text.strip().split('::')
-        graphics.DrawText(canvas, font, 0, 7, l1_color, line1)
+        graphics.DrawText(canvas, font, 5, 19, l1_color, line1)
 
         uw_percent = 0
         if self.args.united > 0:
@@ -71,7 +71,7 @@ class FixedText(SampleBase):
             uw_percent = self.args.united
             self.drawPercentComplete(0, 8, 31, 15, s, uw_percent, f)
         else:
-            graphics.DrawText(canvas, font, 0, 14, l2_color, line2)
+            graphics.DrawText(canvas, font, 0, 24, l2_color, line2)
 
         i, j = 1, 8
         rotateCount = 0

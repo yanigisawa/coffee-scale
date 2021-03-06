@@ -8,11 +8,9 @@ class SimpleSquare(SampleBase):
 
     def run(self):
         offset_canvas = self.matrix.CreateFrameCanvas()
-        print("{0} / {1}".format(offset_canvas.width, offset_canvas.height))
-        print("{0} / {1}".format(self.matrix.width, self.matrix.height))
         x, y = 0, 0
-        min_x, max_x = 0, 32
-        min_y, max_y = 0, 16
+        min_x, max_x = 0, offset_canvas.width
+        min_y, max_y = 0, offset_canvas.height
         direction = 1
         while True:
             self.usleep(50000)

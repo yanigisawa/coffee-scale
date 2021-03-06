@@ -6,6 +6,7 @@ import logging
 import json
 import requests
 import os
+import redis
 
 
 class GameOfLifeRandom(GameOfLifeBase):
@@ -13,6 +14,8 @@ class GameOfLifeRandom(GameOfLifeBase):
         super(GameOfLifeRandom, self).__init__(*args, **kwargs)
         self.toroidal = True
         self.generations = 0
+        self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self.animation_queue = os.environ.get("REDIS_ANIMATION_QUEUE")
 
     def reset(self):
         self.save_gol_iteration()
@@ -22,21 +25,23 @@ class GameOfLifeRandom(GameOfLifeBase):
         self._lights_per_evolution = []
         self.get_random_config()
         self.generations = 0
+        self.redis.publish(self.animation_queue, "STOP")
 
     def get_random_config(self):
         # self.set_manual_config()
         # return
 
         self.initializeCells()
-        # active_cells = random.randint(10, self.matrix.width * self.matrix.height)
-        active_cells = random.randint(10, 200)
+        active_cells = random.randint(100, self.matrix.width * self.matrix.height)
+        # active_cells = random.randint(10, 200)
         for _ in range(active_cells):
             x = random.randint(0, self.matrix.width -1)
             y = random.randint(0, self.matrix.height - 1)
             self.cells[x][y].alive = True
 
     def save_gol_iteration(self):
-        url = "https://gol-initial-states.anvil.app/_/api/"
+        # url = "https://gol-initial-states.anvil.app/_/api/"
+        url = "https://jra-gol-states.anvil.app/_/api/"
         alive_cell_counts = [len(s.split(";")) for s in self._evolutionQueue]
         data = {
             "initial_state": self._initialState,
@@ -78,12 +83,13 @@ class GameOfLifeRandom(GameOfLifeBase):
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(random.randint(1, 5))
-            self.get_random_config()
-            # self.evolve()
-            # self.generations += 1
-            # if self.generations % 1000 == 0:
-            #     self.save_gol_iteration()
+            # self.get_random_config()
+            self.evolve()
+            self.generations += 1
+            if self.generations % 1000 == 0:
+                # self.redis.publish(self.animation_queue, "STOP")
+                self.save_gol_iteration()
+            time.sleep(0.5)
 
 
 

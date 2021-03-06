@@ -32,7 +32,7 @@ class Mario(SampleBase):
                 self.canvas.SetPixel(i, j, 0, 0, 0)
 
     def run(self):
-        x, y, step = 0, 0, 1
+        x, y, step = 10, 0, 1
         count = 0
         self.canvas = self.matrix.CreateFrameCanvas()
         inverse = False
@@ -66,8 +66,7 @@ class Mario(SampleBase):
             #     # self.draw(self.getStanding(x, y, inverse))
                 self.draw(self.getJumping(x, y, inverse))
 
-            # time.sleep(0.2)
-            time.sleep(0.6009999983238451)
+            time.sleep(0.2)
             x += step
             if x > 65 or x < -14:
                 step *= -1

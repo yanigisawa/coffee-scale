@@ -17,7 +17,7 @@
 # python horizontal-lines.py --led-multiplexing=1 --led-brightness=30 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
 # python cat_in_hat.py --led-multiplexing=1 --led-brightness=20 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
 #  python gol-acorn.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
-# python gol-random.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
+python gol-random.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
 # python cono-keyboard.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
 # python gol-gosper-gun.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
 # python3 gol-block-switch.py --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
@@ -27,9 +27,14 @@
 #
 # python gol-gosper-gun.py --led-no-hardware-pulse 1 -r 16
 # python spaceInvader.py --led-no-hardware-pulse 1 --led-multiplexing=1 --led-brightness=10 --led-gpio-mapping=adafruit-hat --led-chain=2 --led-no-hardware-pulse 1 --led-cols=32
-# python fixed-text.py --led-no-hardware-pulse 1 -r 16  -t "United Way::25%" --led-gpio-mapping=adafruit-hat
+# python fixed-text.py --led-no-hardware-pulse 1 -r 32  -t "First::" --led-gpio-mapping=adafruit-hat
 # python fixed-text.py --led-no-hardware-pulse 1 -r 32 --led-gpio-mapping=adafruit-hat -u 50 -t "4 mugs::"
 
-python runtext.py --led-multiplexing=1 --led-chain=2 --led-cols=64 --led-no-hardware-pulse 1 -r 32 -t "This is some long text."
+# python runtext.py --led-multiplexing=1 --led-chain=2 --led-cols=64 --led-no-hardware-pulse 1 -r 32 -t "This is some long text."
+
+# python christmas.py --led-multiplexing=1 --led-chain=2 --led-cols=64 --led-no-hardware-pulse 1 -r 32 
 
 # python bcd_clock.py --led-no-hardware-pulse 1 -r 16
+
+# led-image-viewer --led-multiplexing=1 --led-chain=2 --led-cols=32 --led-no-hardware-pulse --led-rows 32 --led-gpio-mapping adafruit-hat --led-brightness=15 -C  /home/pi/mario.gif
+

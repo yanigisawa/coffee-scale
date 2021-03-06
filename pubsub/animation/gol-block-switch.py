@@ -26,14 +26,12 @@ class GameOfLifeBlockSwitch(GameOfLifeBase):
         self.cells[x + 17][y + 1].alive = True
         self.cells[x + 18][y + 2].alive = True
 
-        ms_delay = 0.5313076904003437
-        print("delay = {0}".format(ms_delay))
         while True:
 
             self.drawCells()
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            time.sleep(ms_delay)
+            time.sleep(0.3)
             self.evolve()
 
 
